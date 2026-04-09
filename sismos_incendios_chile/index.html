@@ -265,7 +265,7 @@
                     </div>
 
                     <!-- Historical Data -->
-                    <div class="fire-section-title" data-i18n="fires.history.title">📊 Historial de Incendios (2021–2025)</div>
+                    <div class="fire-section-title" data-i18n="fires.history.title">📊 Historial de Incendios (2014–2025)</div>
                     <div class="fire-history-table-wrap">
                         <table class="fire-history-table" aria-label="Historial de incendios forestales en Chile">
                             <thead>
@@ -276,22 +276,55 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr><td>2014–2015</td><td>8,048</td><td>76,437</td></tr>
+                                <tr><td>2015–2016</td><td>5,904</td><td>52,792</td></tr>
+                                <tr class="fire-history-highlight"><td>2016–2017</td><td>5,765</td><td>570,197</td></tr>
+                                <tr><td>2017–2018</td><td>6,240</td><td>56,498</td></tr>
+                                <tr><td>2018–2019</td><td>6,479</td><td>61,509</td></tr>
+                                <tr><td>2019–2020</td><td>8,077</td><td>102,126</td></tr>
                                 <tr><td>2020–2021</td><td>5,508</td><td>79,538</td></tr>
                                 <tr><td>2021–2022</td><td>6,412</td><td>84,901</td></tr>
-                                <tr><td>2022–2023</td><td>5,869</td><td>437,113</td></tr>
-                                <tr class="fire-history-highlight"><td>2023–2024</td><td>5,703</td><td>107,237</td></tr>
+                                <tr class="fire-history-highlight"><td>2022–2023</td><td>5,869</td><td>437,113</td></tr>
+                                <tr><td>2023–2024</td><td>5,703</td><td>107,237</td></tr>
                                 <tr><td>2024–2025</td><td>4,892</td><td>62,410</td></tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Top regiones afectadas -->
+                    <div class="fire-section-title">🗺️ Top Regiones Afectadas (2014–2024)</div>
+                    <div class="fire-history-table-wrap">
+                        <table class="fire-history-table" aria-label="Top regiones afectadas por incendios forestales">
+                            <thead>
+                                <tr>
+                                    <th>Región</th>
+                                    <th data-i18n="fires.history.fires">Incendios</th>
+                                    <th data-i18n="fires.history.hectares">Hectáreas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Biobío</td><td>23,199</td><td>377,096</td></tr>
+                                <tr><td>La Araucanía</td><td>13,658</td><td>369,815</td></tr>
+                                <tr><td>Maule</td><td>8,325</td><td>360,487</td></tr>
+                                <tr><td>O'Higgins</td><td>3,020</td><td>159,645</td></tr>
+                                <tr><td>Ñuble</td><td>3,946</td><td>112,663</td></tr>
+                                <tr><td>Valparaíso</td><td>6,889</td><td>86,781</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="fire-history-note" style="margin-top: 6px;">
+                        <i class="fas fa-database" style="color: #38bdf8;"></i>
+                        <span>Total nacional 2014–2024: <strong>68,546</strong> incendios · <strong>1,626,894</strong> hectáreas · Promedio: 23.7 ha/incendio. Fuente: CONAF Looker Studio.</span>
+                    </div>
+
                     <div class="fire-history-chart" id="fireHistoryChart"></div>
                     <div class="fire-history-note">
                         <i class="fas fa-info-circle"></i>
-                        <span data-i18n="fires.history.note">La temporada 2022–2023 fue la más devastadora en décadas, con los mega-incendios de la región del Biobío y Ñuble (febrero 2023). Datos: CONAF, Informes Estadísticos oficiales.</span>
+                        <span data-i18n="fires.history.note">La temporada 2016–2017 fue la peor registrada (570,197 ha), seguida por 2022–2023 con los mega-incendios del Biobío y Ñuble. Datos: CONAF, Informes Estadísticos oficiales.</span>
                     </div>
                     <div class="fire-history-note" style="margin-top: 6px;">
                         <i class="fas fa-chart-line" style="color: #f9d423;"></i>
-                        <span data-i18n="fires.history.trend">Tendencia: El número de incendios se mantiene entre 5,000-6,500/año, pero la superficie afectada varía drásticamente según eventos extremos (mega-incendios).</span>
+                        <span data-i18n="fires.history.trend">Tendencia: El número de incendios se mantiene entre 5,000–8,000/año, pero la superficie afectada varía drásticamente según eventos extremos (mega-incendios).</span>
                     </div>
 
                     <div class="fire-note" style="margin-top: 10px;">
@@ -302,11 +335,17 @@
                         <a class="fire-link" href="https://www.conaf.cl/incendios/situacion-actual-y-pronostico-de-incendios/" target="_blank" rel="noopener noreferrer">
                             <i class="fas fa-external-link-alt"></i> <span data-i18n="fires.conafLink">Ver situación actual en CONAF</span>
                         </a>
-                        <a class="fire-link" href="https://www.conaf.cl/incendios/incendios-forestales-en-chile/estadisticas-historicas/" target="_blank" rel="noopener noreferrer">
-                            <i class="fas fa-chart-bar"></i> <span data-i18n="fires.historyLink">Estadísticas históricas CONAF</span>
+                        <a class="fire-link" href="https://lookerstudio.google.com/u/0/reporting/67f0cad1-336d-4992-ad69-cf821cadc41c/page/LbnnD" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-chart-bar"></i> <span data-i18n="fires.historyLink">Estadísticas históricas CONAF (Looker Studio)</span>
                         </a>
                         <a class="fire-link" href="https://firms.modaps.eosdis.nasa.gov/map/#d:24hrs;@-70.5,-33.5,5z" target="_blank" rel="noopener noreferrer">
                             <i class="fas fa-globe"></i> <span data-i18n="fires.nasaLink">Ver mapa completo NASA FIRMS</span>
+                        </a>
+                        <a class="fire-link" href="https://www.globalfiredata.org/" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-fire"></i> <span>Global Fire Emissions Database (GFED)</span>
+                        </a>
+                        <a class="fire-link" href="https://web.senapred.cl/alertas-2/" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-exclamation-triangle"></i> <span>Alertas SENAPRED</span>
                         </a>
                     </div>
                 </div>
@@ -349,6 +388,22 @@
                             <strong data-i18n="sources.conaf.name">CONAF (Corp. Nacional Forestal)</strong>
                             <span data-i18n="sources.conaf.desc">Información oficial de incendios forestales en Chile. Emergencias: 130.</span>
                             <a href="https://www.conaf.cl/incendios/" target="_blank" rel="noopener noreferrer">conaf.cl</a>
+                        </div>
+                    </div>
+                    <div class="source-card">
+                        <div class="source-icon" style="color: #f9d423;"><i class="fas fa-fire-alt"></i></div>
+                        <div class="source-info">
+                            <strong>GFED (Global Fire Emissions Database)</strong>
+                            <span>Emisiones globales de incendios basadas en área quemada MODIS/VIIRS. Resolución 0.25°.</span>
+                            <a href="https://www.globalfiredata.org/" target="_blank" rel="noopener noreferrer">globalfiredata.org</a>
+                        </div>
+                    </div>
+                    <div class="source-card">
+                        <div class="source-icon" style="color: #c77dff;"><i class="fas fa-shield-alt"></i></div>
+                        <div class="source-info">
+                            <strong>SENAPRED (Servicio Nacional de Prevención y Respuesta ante Desastres)</strong>
+                            <span>Alertas oficiales de emergencia y desastres en Chile.</span>
+                            <a href="https://web.senapred.cl/alertas-2/" target="_blank" rel="noopener noreferrer">senapred.cl</a>
                         </div>
                     </div>
                     <div class="source-osm" data-i18n="sources.osm">Mapa base: OpenStreetMap + CARTO</div>

@@ -740,10 +740,10 @@ const TRANSLATIONS = {
 
     // ===== Fire Historical Data =====
     'fires.history.title': {
-        es: '📊 Historial de Incendios (2021–2025)',
-        arn: '📊 Kütral Kuyfike Küdaw (2021–2025)',
-        pt: '📊 Histórico de Incêndios (2021–2025)',
-        en: '📊 Fire History (2021–2025)'
+        es: '📊 Historial de Incendios (2014–2025)',
+        arn: '📊 Kütral Kuyfike Küdaw (2014–2025)',
+        pt: '📊 Histórico de Incêndios (2014–2025)',
+        en: '📊 Fire History (2014–2025)'
     },
     'fires.history.season': {
         es: 'Temporada', arn: 'Epe Tripantu', pt: 'Temporada', en: 'Season'
@@ -755,22 +755,22 @@ const TRANSLATIONS = {
         es: 'Hectáreas', arn: 'Hectárea', pt: 'Hectares', en: 'Hectares'
     },
     'fires.history.note': {
-        es: 'La temporada 2022–2023 fue la más devastadora en décadas, con los mega-incendios de la región del Biobío y Ñuble (febrero 2023). Datos: CONAF, Informes Estadísticos oficiales.',
-        arn: '2022–2023 epe tripantu müna fütra kütral rupay, Biobío ka Ñuble mew (febrero 2023). Datos: CONAF kimün.',
-        pt: 'A temporada 2022–2023 foi a mais devastadora em décadas, com os mega-incêndios da região do Biobío e Ñuble (fevereiro 2023). Dados: CONAF, Relatórios Estatísticos oficiais.',
-        en: 'The 2022–2023 season was the most devastating in decades, with the mega-fires in the Biobío and Ñuble regions (February 2023). Data: CONAF, Official Statistical Reports.'
+        es: 'La temporada 2016–2017 fue la peor registrada (570,197 ha), seguida por 2022–2023 con los mega-incendios del Biobío y Ñuble. Total 2014–2024: 68,546 incendios, 1,626,894 ha. Fuente: CONAF Looker Studio.',
+        arn: '2016–2017 epe tripantu müna fütra kütral rupay (570,197 ha), ka 2022–2023 Biobío ka Ñuble mew. Datos: CONAF kimün.',
+        pt: 'A temporada 2016–2017 foi a pior registrada (570.197 ha), seguida por 2022–2023 com os mega-incêndios do Biobío e Ñuble. Total 2014–2024: 68.546 incêndios, 1.626.894 ha. Fonte: CONAF Looker Studio.',
+        en: 'The 2016–2017 season was the worst on record (570,197 ha), followed by 2022–2023 with the Biobío and Ñuble mega-fires. Total 2014–2024: 68,546 fires, 1,626,894 ha. Source: CONAF Looker Studio.'
     },
     'fires.history.trend': {
-        es: 'Tendencia: El número de incendios se mantiene entre 5,000-6,500/año, pero la superficie afectada varía drásticamente según eventos extremos (mega-incendios).',
-        arn: 'Amul: Kütral 5,000-6,500/tripantu, welu mapu afkentu fütra kütral mew wechuy.',
-        pt: 'Tendência: O número de incêndios se mantém entre 5.000-6.500/ano, mas a superfície afetada varia drasticamente segundo eventos extremos (mega-incêndios).',
-        en: 'Trend: The number of fires remains between 5,000-6,500/year, but the affected area varies dramatically depending on extreme events (mega-fires).'
+        es: 'Tendencia: El número de incendios se mantiene entre 5,000–8,000/año, pero la superficie afectada varía drásticamente según eventos extremos (mega-incendios).',
+        arn: 'Amul: Kütral 5,000–8,000/tripantu, welu mapu afkentu fütra kütral mew wechuy.',
+        pt: 'Tendência: O número de incêndios se mantém entre 5.000–8.000/ano, mas a superfície afetada varia drasticamente segundo eventos extremos (mega-incêndios).',
+        en: 'Trend: The number of fires remains between 5,000–8,000/year, but the affected area varies dramatically depending on extreme events (mega-fires).'
     },
     'fires.historyLink': {
-        es: 'Estadísticas históricas CONAF',
-        arn: 'CONAF kuyfike kimün',
-        pt: 'Estatísticas históricas CONAF',
-        en: 'Historical statistics CONAF'
+        es: 'Estadísticas históricas CONAF (Looker Studio)',
+        arn: 'CONAF kuyfike kimün (Looker Studio)',
+        pt: 'Estatísticas históricas CONAF (Looker Studio)',
+        en: 'Historical statistics CONAF (Looker Studio)'
     },
 
     // ===== Sources =====

@@ -875,6 +875,12 @@ function renderFireHistoryChart() {
     if (!container) return;
 
     const data = [
+        { season: '14-15', fires: 8048, hectares: 76437 },
+        { season: '15-16', fires: 5904, hectares: 52792 },
+        { season: '16-17', fires: 5765, hectares: 570197 },
+        { season: '17-18', fires: 6240, hectares: 56498 },
+        { season: '18-19', fires: 6479, hectares: 61509 },
+        { season: '19-20', fires: 8077, hectares: 102126 },
         { season: '20-21', fires: 5508, hectares: 79538 },
         { season: '21-22', fires: 6412, hectares: 84901 },
         { season: '22-23', fires: 5869, hectares: 437113 },
