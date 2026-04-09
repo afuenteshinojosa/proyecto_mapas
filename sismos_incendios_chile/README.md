@@ -31,8 +31,8 @@ Dashboard interactivo que visualiza **sismos** e **incendios forestales** en Chi
 | 📡 **Datos en tiempo real** | Sismos vía USGS API, incendios vía NASA FIRMS |
 | 🔍 **Filtros avanzados** | Por período, magnitud mínima y profundidad |
 | 🌐 **Multiidioma** | Español, English, Português y Mapudungün |
-| ♿ **Accesibilidad** | Lector de pantalla (TTS), alto contraste, modo niños |
-| 🧒 **Modo niños** | Explicaciones simples con colores para los más pequeños |
+| ♿ **Accesibilidad** | Lector de pantalla (TTS), alto contraste, modo infancias |
+| 🧒 **Modo infancias** | Explicaciones simples con colores para la niñez |
 | 🔥 **Capa de incendios** | Focos de calor activos de las últimas 24h |
 | 🌏 **Placas tectónicas** | Visualización de límites de placas sobre el mapa |
 | 📊 **Estadísticas** | Conteo de sismos, magnitud máxima y profundidad promedio |
@@ -104,8 +104,8 @@ sismos_incendios_chile/
 La aplicación incluye herramientas de accesibilidad integradas:
 
 - **Lector en voz alta (TTS):** Lee los datos sísmicos usando la API de síntesis de voz del navegador.
-- **Modo niños:** Simplifica la información con explicaciones visuales y colores.
-- **Alto contraste:** Mejora la visibilidad para usuarios con baja visión.
+- **Modo infancias:** Simplifica la información con explicaciones visuales y colores.
+- **Alto contraste:** Mejora la visibilidad para personas con baja visión.
 - **ARIA labels:** Compatibilidad con lectores de pantalla.
 
 ---
