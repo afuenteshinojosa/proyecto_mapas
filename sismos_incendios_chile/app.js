@@ -1,12 +1,15 @@
 // ===== State =====
-let map, markersLayer, platesLayer, fireLayer, selectedQuake = null;
+let map, markersLayer, platesLayer, fireLayer, fireMarkersLayer, selectedQuake = null;
 let allQuakes = [];
+let allFires = [];
+let heatLayer = null;
 let autoRefreshInterval = null;
 let platesVisible = true;
 let fireLayerVisible = false;
 let ttsActive = false;
 let kidMode = false;
 let highContrast = false;
+let currentViewMode = 'both'; // 'both', 'quakes', 'fires'
 
 // ===== Configuration =====
 const CHILE_BOUNDS = {
@@ -15,6 +18,7 @@ const CHILE_BOUNDS = {
 };
 
 const USGS_API = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
+const FIRMS_API = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv';
 
 // ===== Color Helpers =====
 function getMagColor(mag) {
@@ -105,7 +109,7 @@ function initMap() {
 
     // ===== Fire Layer =====
     fireLayer = L.layerGroup();
-    buildFireLayer();
+    fireMarkersLayer = L.layerGroup();
 
     markersLayer = L.layerGroup().addTo(map);
 
@@ -151,7 +155,7 @@ async function fetchEarthquakes() {
     const start = new Date(now.getTime() - period * 3600000);
 
     const source = document.getElementById('dataSource').value;
-    let minMagnitude = source === 'usgs_all' ? 1 : 2.5;
+    let minMagnitude = source === 'usgs' ? 2.5 : 1;
 
     const params = new URLSearchParams({
         format: 'geojson',
@@ -719,35 +723,63 @@ function toggleHeatmap() {
     document.getElementById('heatmapBtn').classList.toggle('active', heatmapMode);
 
     if (heatmapMode) {
-        // Switch to a density-style view: bigger, more transparent circles
-        markersLayer.clearLayers();
-        const minMag = parseFloat(document.getElementById('minMag').value);
-        const maxDepth = parseFloat(document.getElementById('maxDepth').value);
-        const filtered = allQuakes.filter(q => q.mag >= minMag && q.depth <= maxDepth);
+        // Build heatmap data from visible layers
+        const heatData = [];
 
-        filtered.forEach(q => {
-            const radius = Math.pow(2, q.mag) * 800;
-            L.circle([q.lat, q.lng], {
-                radius: radius,
-                color: 'transparent',
-                fillColor: getMagColor(q.mag),
-                fillOpacity: 0.15,
-                interactive: false
-            }).addTo(markersLayer);
-
-            // Also add a small center dot
-            const size = getMarkerSize(q.mag);
-            const icon = L.divIcon({
-                className: 'quake-marker',
-                html: `<div style="width:${size * 0.6}px;height:${size * 0.6}px;background:${getMagColor(q.mag)};border-radius:50%;opacity:0.8;"></div>`,
-                iconSize: [size * 0.6, size * 0.6],
-                iconAnchor: [size * 0.3, size * 0.3]
+        if (currentViewMode !== 'fires') {
+            const minMag = parseFloat(document.getElementById('minMag').value);
+            const maxDepth = parseFloat(document.getElementById('maxDepth').value);
+            const filtered = allQuakes.filter(q => q.mag >= minMag && q.depth <= maxDepth);
+            filtered.forEach(q => {
+                // intensity based on magnitude (0-1 range)
+                const intensity = Math.min(1, q.mag / 8);
+                heatData.push([q.lat, q.lng, intensity]);
             });
-            L.marker([q.lat, q.lng], { icon })
-                .on('click', () => showQuakeInfo(q))
-                .addTo(markersLayer);
-        });
+        }
+
+        if (currentViewMode !== 'quakes') {
+            allFires.forEach(f => {
+                // fire confidence as intensity
+                const intensity = Math.min(1, (f.confidence || 50) / 100);
+                heatData.push([f.lat, f.lng, intensity]);
+            });
+        }
+
+        // Remove existing heat layer
+        if (heatLayer) {
+            map.removeLayer(heatLayer);
+        }
+
+        // Hide point markers
+        map.removeLayer(markersLayer);
+        map.removeLayer(fireMarkersLayer);
+
+        // Create real density heatmap using leaflet.heat
+        if (typeof L.heatLayer === 'function') {
+            heatLayer = L.heatLayer(heatData, {
+                radius: 35,
+                blur: 25,
+                maxZoom: 10,
+                max: 1.0,
+                gradient: {
+                    0.1: '#43e97b',
+                    0.3: '#f9d423',
+                    0.5: '#ff6b35',
+                    0.7: '#e63946',
+                    1.0: '#9d0208'
+                }
+            }).addTo(map);
+        }
     } else {
+        // Remove heatmap, restore markers
+        if (heatLayer) {
+            map.removeLayer(heatLayer);
+            heatLayer = null;
+        }
+        markersLayer.addTo(map);
+        if (fireLayerVisible) {
+            fireMarkersLayer.addTo(map);
+        }
         applyFilters();
     }
 }
@@ -759,68 +791,123 @@ function updateLastUpdate() {
         `${t('header.lastUpdate')}: ${now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
 }
 
-// ===== Fire Layer (NASA GIBS VIIRS/MODIS) =====
-function getFireDates() {
+// ===== Fire Layer (NASA FIRMS open CSV) =====
+function getFireDayRange() {
     const period = document.getElementById('firePeriod')?.value || '24h';
-
-    if (period === 'custom') {
-        const month = parseInt(document.getElementById('fireMonth')?.value || '0');
-        const year = parseInt(document.getElementById('fireYear')?.value || new Date().getFullYear());
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const dates = [];
-        // Sample up to 8 evenly spaced days to avoid overloading tiles
-        const step = Math.max(1, Math.floor(daysInMonth / 8));
-        for (let d = 1; d <= daysInMonth; d += step) {
-            const dt = new Date(year, month, d);
-            dates.push(dt.toISOString().split('T')[0]);
-        }
-        return dates;
-    }
-
-    const today = new Date();
-    const dates = [];
-    let days = 1;
-    if (period === '48h') days = 2;
-    if (period === '7d') days = 7;
-    for (let i = 0; i < days; i++) {
-        const dt = new Date(today);
-        dt.setDate(dt.getDate() - i);
-        dates.push(dt.toISOString().split('T')[0]);
-    }
-    return dates;
+    if (period === '48h') return 2;
+    if (period === '7d') return 7;
+    return 1; // 24h
 }
 
-function buildFireLayer() {
-    fireLayer.clearLayers();
+function getFireConfidenceColor(confidence) {
+    if (typeof confidence === 'string') {
+        if (confidence === 'high' || confidence === 'h') return '#ff2200';
+        if (confidence === 'nominal' || confidence === 'n') return '#ff8800';
+        return '#ffbb33';
+    }
+    const c = parseInt(confidence) || 50;
+    if (c >= 80) return '#ff2200';
+    if (c >= 50) return '#ff8800';
+    return '#ffbb33';
+}
 
-    // NASA GIBS provides free tile overlays for fire/thermal anomalies
-    // VIIRS SNPP + NOAA-20 thermal anomalies tiles (no API key needed)
-    const dates = getFireDates();
+function getFireSize(brightness) {
+    const b = parseFloat(brightness) || 320;
+    if (b < 310) return 6;
+    if (b < 340) return 9;
+    if (b < 370) return 12;
+    return 16;
+}
 
-    dates.forEach(dateStr => {
-        // VIIRS SNPP Day/Night Band thermal anomalies
-        const viirsTiles = L.tileLayer(
-            'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_Thermal_Anomalies_375m_All/default/{time}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
-            time: dateStr,
-            opacity: 0.85,
-            maxZoom: 8,
-            bounds: [[-56, -80], [-17, -64]],
-            attribution: 'Fire data: NASA FIRMS / GIBS'
+async function fetchFires() {
+    const dayRange = getFireDayRange();
+    // Use NASA FIRMS open CSV endpoint (VIIRS SNPP, no key needed for small requests)
+    // Area: Chile bounding box
+    const url = `https://firms.modaps.eosdis.nasa.gov/api/country/csv/OPEN_KEY/VIIRS_SNPP_NRT/CHL/${dayRange}`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        const lines = text.trim().split('\n');
+        if (lines.length < 2) { allFires = []; renderFireMarkers(); return; }
+
+        const headers = lines[0].split(',');
+        const latIdx = headers.indexOf('latitude');
+        const lngIdx = headers.indexOf('longitude');
+        const brightIdx = headers.indexOf('bright_ti4');
+        const confIdx = headers.indexOf('confidence');
+        const dateIdx = headers.indexOf('acq_date');
+        const timeIdx = headers.indexOf('acq_time');
+        const frpIdx = headers.indexOf('frp');
+
+        allFires = [];
+        for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',');
+            if (cols.length < headers.length) continue;
+            const lat = parseFloat(cols[latIdx]);
+            const lng = parseFloat(cols[lngIdx]);
+            if (isNaN(lat) || isNaN(lng)) continue;
+            allFires.push({
+                lat, lng,
+                brightness: parseFloat(cols[brightIdx]) || 320,
+                confidence: cols[confIdx] || 'n',
+                date: cols[dateIdx] || '',
+                time: cols[timeIdx] || '',
+                frp: parseFloat(cols[frpIdx]) || 0
+            });
+        }
+        renderFireMarkers();
+    } catch (err) {
+        console.error('Error fetching fire data:', err);
+        allFires = [];
+        renderFireMarkers();
+    }
+}
+
+function renderFireMarkers() {
+    fireMarkersLayer.clearLayers();
+
+    allFires.forEach(f => {
+        const color = getFireConfidenceColor(f.confidence);
+        const size = getFireSize(f.brightness);
+
+        // Diamond/rotated-square shape to differentiate from quake circles
+        const icon = L.divIcon({
+            className: 'fire-marker',
+            html: `<div style="
+                width: ${size}px;
+                height: ${size}px;
+                background: ${color};
+                border: 1.5px solid ${color};
+                transform: rotate(45deg);
+                box-shadow: 0 0 ${size}px ${color}88, 0 0 ${size * 2}px ${color}44;
+                cursor: pointer;
+                opacity: 0.9;
+            "></div>`,
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
         });
 
-        // MODIS thermal anomalies (backup/additional layer)
-        const modisTiles = L.tileLayer(
-            'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Thermal_Anomalies_All/default/{time}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
-            time: dateStr,
-            opacity: 0.75,
-            maxZoom: 8,
-            bounds: [[-56, -80], [-17, -64]],
-            attribution: 'Fire data: NASA MODIS / GIBS'
-        });
+        const marker = L.marker([f.lat, f.lng], { icon })
+            .bindTooltip(`
+                <div style="text-align:center; font-family:'Inter',sans-serif;">
+                    <strong style="color:${color};">🔥 Foco de calor</strong><br>
+                    <span style="font-size:11px;">Brillo: ${f.brightness.toFixed(0)} K</span><br>
+                    <span style="font-size:11px;">FRP: ${f.frp.toFixed(1)} MW</span><br>
+                    <span style="font-size:10px; opacity:0.7;">${f.date} ${f.time}</span>
+                </div>
+            `, { direction: 'top', offset: [0, -size / 2 - 4] });
 
-        fireLayer.addLayer(viirsTiles);
-        fireLayer.addLayer(modisTiles);
+        fireMarkersLayer.addLayer(marker);
     });
+
+    // Update fire count in legend if visible
+    const fireLegend = document.getElementById('fireLegend');
+    if (fireLegend && fireLayerVisible) {
+        const fireCountEl = document.getElementById('fireCount');
+        if (fireCountEl) fireCountEl.textContent = allFires.length;
+    }
 }
 
 function toggleFireLayer() {
@@ -830,10 +917,10 @@ function toggleFireLayer() {
     document.getElementById('fireLegend').style.display = fireLayerVisible ? 'block' : 'none';
 
     if (fireLayerVisible) {
-        buildFireLayer();
-        fireLayer.addTo(map);
+        fetchFires();
+        fireMarkersLayer.addTo(map);
     } else {
-        map.removeLayer(fireLayer);
+        map.removeLayer(fireMarkersLayer);
     }
 }
 
@@ -850,7 +937,46 @@ function updateFireLayer() {
         customDiv.style.display = period === 'custom' ? 'flex' : 'none';
     }
     if (fireLayerVisible) {
-        buildFireLayer();
+        fetchFires();
+    }
+}
+
+// ===== View Mode (sismos / incendios / ambos) =====
+function changeViewMode() {
+    currentViewMode = document.getElementById('viewMode').value;
+
+    if (currentViewMode === 'fires') {
+        map.removeLayer(markersLayer);
+        fireLayerVisible = true;
+        document.getElementById('fireLayerToggle').checked = true;
+        document.getElementById('firesBtn').classList.add('active');
+        document.getElementById('fireLegend').style.display = 'block';
+        fetchFires();
+        fireMarkersLayer.addTo(map);
+    } else if (currentViewMode === 'quakes') {
+        map.removeLayer(fireMarkersLayer);
+        fireLayerVisible = false;
+        document.getElementById('fireLayerToggle').checked = false;
+        document.getElementById('firesBtn').classList.remove('active');
+        document.getElementById('fireLegend').style.display = 'none';
+        markersLayer.addTo(map);
+        applyFilters();
+    } else {
+        // both
+        markersLayer.addTo(map);
+        fireLayerVisible = true;
+        document.getElementById('fireLayerToggle').checked = true;
+        document.getElementById('firesBtn').classList.add('active');
+        document.getElementById('fireLegend').style.display = 'block';
+        fetchFires();
+        fireMarkersLayer.addTo(map);
+        applyFilters();
+    }
+
+    // Re-render heatmap if active
+    if (heatmapMode) {
+        heatmapMode = false;
+        toggleHeatmap();
     }
 }
 
@@ -1038,6 +1164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
     initMap();
     fetchEarthquakes();
+    fetchFires();
     startAutoRefresh();
     renderFireHistoryChart();
     initFireYearSelect();
