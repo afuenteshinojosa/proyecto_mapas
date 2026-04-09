@@ -563,6 +563,52 @@ a:hover {
     color: var(--text-secondary) !important;
 }
 
+/* Map Tabs */
+.map-tabs {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 800;
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.map-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+
+.map-tab:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.map-tab.active {
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+.map-tab[data-tab="fires"].active {
+    background: var(--orange);
+}
+
 /* Map overlay controls */
 .map-overlay-controls {
     position: absolute;

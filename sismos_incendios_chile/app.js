@@ -9,7 +9,7 @@ let fireLayerVisible = false;
 let ttsActive = false;
 let kidMode = false;
 let highContrast = false;
-let currentViewMode = 'both'; // 'both', 'quakes', 'fires'
+let currentViewMode = 'quakes'; // 'quakes', 'fires'
 
 // ===== Configuration =====
 const CHILE_BOUNDS = {
@@ -431,8 +431,7 @@ function selectQuake(id) {
 let quakeLayerVisible = true;
 
 function toggleQuakeLayer() {
-    const checkbox = document.getElementById('quakeLayerToggle');
-    quakeLayerVisible = checkbox.checked;
+    quakeLayerVisible = !quakeLayerVisible;
     if (quakeLayerVisible) {
         markersLayer.addTo(map);
     } else {
@@ -788,8 +787,9 @@ function toggleHeatmap() {
             map.removeLayer(heatLayer);
             heatLayer = null;
         }
-        markersLayer.addTo(map);
-        if (fireLayerVisible) {
+        if (currentViewMode === 'quakes') {
+            markersLayer.addTo(map);
+        } else {
             fireMarkersLayer.addTo(map);
         }
         applyFilters();
@@ -939,9 +939,12 @@ function toggleFireLayer() {
 }
 
 function toggleFireLayerBtn() {
-    const checkbox = document.getElementById('fireLayerToggle');
-    checkbox.checked = !checkbox.checked;
-    toggleFireLayer();
+    // Switch to fires tab if on quakes, or back to quakes if on fires
+    if (currentViewMode === 'fires') {
+        switchMapTab('quakes');
+    } else {
+        switchMapTab('fires');
+    }
 }
 
 function updateFireLayer() {
@@ -955,11 +958,16 @@ function updateFireLayer() {
     }
 }
 
-// ===== View Mode (sismos / incendios / ambos) =====
-function changeViewMode() {
-    currentViewMode = document.getElementById('viewMode').value;
+// ===== Map Tab Switching =====
+function switchMapTab(tab) {
+    currentViewMode = tab;
 
-    if (currentViewMode === 'fires') {
+    // Update tab buttons
+    document.querySelectorAll('.map-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+
+    if (tab === 'fires') {
         map.removeLayer(markersLayer);
         fireLayerVisible = true;
         document.getElementById('fireLayerToggle').checked = true;
@@ -967,23 +975,13 @@ function changeViewMode() {
         document.getElementById('fireLegend').style.display = 'block';
         fetchFires();
         fireMarkersLayer.addTo(map);
-    } else if (currentViewMode === 'quakes') {
+    } else {
         map.removeLayer(fireMarkersLayer);
         fireLayerVisible = false;
         document.getElementById('fireLayerToggle').checked = false;
         document.getElementById('firesBtn').classList.remove('active');
         document.getElementById('fireLegend').style.display = 'none';
         markersLayer.addTo(map);
-        applyFilters();
-    } else {
-        // both
-        markersLayer.addTo(map);
-        fireLayerVisible = true;
-        document.getElementById('fireLayerToggle').checked = true;
-        document.getElementById('firesBtn').classList.add('active');
-        document.getElementById('fireLegend').style.display = 'block';
-        fetchFires();
-        fireMarkersLayer.addTo(map);
         applyFilters();
     }
 
@@ -1179,10 +1177,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
     initMap();
     fetchEarthquakes();
-    fetchFires();
+    fetchFires(); // Prefetch fire data
     startAutoRefresh();
     renderFireHistoryChart();
     initFireYearSelect();
+    // Start on quakes tab
+    switchMapTab('quakes');
 
     // Close lang dropdown on outside click
     document.addEventListener('click', (e) => {
