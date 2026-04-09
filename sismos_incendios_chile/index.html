@@ -148,6 +148,13 @@
                         </select>
                     </div>
                     <div class="filter-group">
+                        <label class="fire-toggle" style="margin-top:4px;">
+                            <input type="checkbox" id="quakeLayerToggle" checked onchange="toggleQuakeLayer()">
+                            <span class="fire-toggle-slider"></span>
+                            <span>Mostrar sismos</span>
+                        </label>
+                    </div>
+                    <div class="filter-group">
                         <label>Vista en mapa</label>
                         <select id="viewMode" onchange="changeViewMode()">
                             <option value="both">Sismos + Incendios</option>

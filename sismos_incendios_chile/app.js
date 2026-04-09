@@ -428,6 +428,18 @@ function selectQuake(id) {
 }
 
 // ===== Controls =====
+let quakeLayerVisible = true;
+
+function toggleQuakeLayer() {
+    const checkbox = document.getElementById('quakeLayerToggle');
+    quakeLayerVisible = checkbox.checked;
+    if (quakeLayerVisible) {
+        markersLayer.addTo(map);
+    } else {
+        map.removeLayer(markersLayer);
+    }
+}
+
 function resetView() {
     map.flyTo([-33.5, -70.5], 5, { duration: 0.8 });
 }
