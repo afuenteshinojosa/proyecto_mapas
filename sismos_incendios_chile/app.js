@@ -806,9 +806,9 @@ function updateLastUpdate() {
 // ===== Fire Layer (NASA FIRMS open CSV) =====
 function getFireDayRange() {
     const period = document.getElementById('firePeriod')?.value || '24h';
-    if (period === '48h') return 2;
-    if (period === '7d') return 7;
-    return 1; // 24h
+    if (period === '48h') return '48h';
+    if (period === '7d' || period === 'custom') return '7d';
+    return '24h';
 }
 
 function getFireConfidenceColor(confidence) {
@@ -833,9 +833,9 @@ function getFireSize(brightness) {
 
 async function fetchFires() {
     const dayRange = getFireDayRange();
-    // Use NASA FIRMS open CSV endpoint (VIIRS SNPP, no key needed for small requests)
-    // Area: Chile bounding box
-    const url = `https://firms.modaps.eosdis.nasa.gov/api/country/csv/OPEN_KEY/VIIRS_SNPP_NRT/CHL/${dayRange}`;
+    // Use NASA FIRMS direct CSV download (VIIRS SNPP, no key needed)
+    // South America region, then filter to Chile bounding box
+    const url = `https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/csv/SUOMI_VIIRS_C2_South_America_${dayRange}.csv`;
 
     try {
         const response = await fetch(url);
@@ -854,12 +854,14 @@ async function fetchFires() {
         const frpIdx = headers.indexOf('frp');
 
         allFires = [];
+        // Chile bounding box: lat -56 to -17, lng -80 to -64
         for (let i = 1; i < lines.length; i++) {
             const cols = lines[i].split(',');
             if (cols.length < headers.length) continue;
             const lat = parseFloat(cols[latIdx]);
             const lng = parseFloat(cols[lngIdx]);
             if (isNaN(lat) || isNaN(lng)) continue;
+            if (lat < -56 || lat > -17 || lng < -80 || lng > -64) continue;
             allFires.push({
                 lat, lng,
                 brightness: parseFloat(cols[brightIdx]) || 320,
@@ -1168,6 +1170,7 @@ function startAutoRefresh() {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     autoRefreshInterval = setInterval(() => {
         fetchEarthquakes();
+        fetchFires();
     }, 60000); // Every 60 seconds
 }
 

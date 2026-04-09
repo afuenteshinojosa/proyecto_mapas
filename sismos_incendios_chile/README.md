@@ -95,7 +95,7 @@ sismos_incendios_chile/
 | Español | `es` | 🇨🇱 |
 | English | `en` | 🇬🇧 |
 | Português | `pt` | 🇧🇷 |
-| Mapudungün | `arn` | 🏳️ |
+| Mapudungün | `arn` | <img src="https://mapuche.info/images/historical-file/wunelfe.jpg" alt="Wenufoye" height="14"> |
 
 ---
 
