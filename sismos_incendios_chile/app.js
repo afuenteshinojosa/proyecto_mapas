@@ -314,6 +314,13 @@ function sanitizeHTML(str) {
 function updateStats(quakes) {
     document.getElementById('totalCount').textContent = quakes.length;
 
+    // Update label to match selected period
+    const period = parseInt(document.getElementById('timePeriod').value);
+    const periodLabels = { 1: '1h', 24: '24h', 168: '7d', 720: '30d' };
+    const periodKey = periodLabels[period] || period + 'h';
+    const label = document.getElementById('statsLabel');
+    if (label) label.textContent = `Sismos (${periodKey})`;
+
     if (quakes.length > 0) {
         const maxMag = Math.max(...quakes.map(q => q.mag));
         const avgDepth = quakes.reduce((s, q) => s + q.depth, 0) / quakes.length;
