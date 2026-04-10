@@ -660,6 +660,54 @@ a:hover {
     border-radius: var(--radius);
     padding: 12px 16px;
     box-shadow: var(--shadow);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    touch-action: none;
+    cursor: grab;
+}
+
+.map-legend.dragging {
+    cursor: grabbing;
+    transition: none;
+    opacity: 0.85;
+}
+
+.map-legend.hidden-swipe {
+    transform: translateX(-120%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Drag handle */
+.legend-drag-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--text-muted);
+    border-radius: 2px;
+    margin: 0 auto 8px;
+    opacity: 0.5;
+    cursor: grab;
+}
+
+.legend-drag-handle:active {
+    opacity: 0.8;
+    cursor: grabbing;
+}
+
+/* Info box draggable */
+.info-box {
+    touch-action: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.info-box.dragging {
+    transition: none;
+    opacity: 0.85;
+}
+
+.info-box.hidden-swipe {
+    transform: translateX(120%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .map-legend h4 {

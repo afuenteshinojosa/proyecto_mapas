@@ -423,7 +423,9 @@ function sanitizeURL(url) {
 }
 
 function closeInfoBox() {
-    document.getElementById('infoBox').style.display = 'none';
+    const infoBox = document.getElementById('infoBox');
+    infoBox.style.display = 'none';
+    infoBox.classList.remove('hidden-swipe');
     selectedQuake = null;
     document.querySelectorAll('.quake-item.active').forEach(el => el.classList.remove('active'));
 }
@@ -1098,6 +1100,106 @@ function toggleHighContrast() {
     document.getElementById('highContrastBtn').classList.toggle('active', highContrast);
 }
 
+// ===== Drag / Swipe to Dismiss =====
+function initSwipeToDismiss(panel, handleId, direction) {
+    const handle = document.getElementById(handleId);
+    if (!handle || !panel) return;
+
+    let startX = 0, startY = 0, currentX = 0, isDragging = false;
+    const threshold = 80; // px to trigger dismiss
+    const isLeft = direction === 'left'; // legend swipes left, info swipes right
+
+    handle.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        currentX = 0;
+        panel.classList.add('dragging');
+    }, { passive: true });
+
+    handle.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+        // Only handle horizontal swipe
+        if (Math.abs(dx) > Math.abs(dy)) {
+            currentX = dx;
+            // Only allow swipe in dismiss direction
+            if ((isLeft && dx < 0) || (!isLeft && dx > 0)) {
+                panel.style.transform = `translateX(${dx}px)`;
+                panel.style.opacity = Math.max(0.3, 1 - Math.abs(dx) / 200);
+            }
+        }
+    }, { passive: true });
+
+    handle.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        panel.classList.remove('dragging');
+        const shouldDismiss = isLeft ? currentX < -threshold : currentX > threshold;
+        if (shouldDismiss) {
+            panel.classList.add('hidden-swipe');
+            panel.style.transform = '';
+            panel.style.opacity = '';
+            if (panel.id === 'mapLegend') {
+                document.getElementById('legendRestoreBtn').style.display = '';
+            } else if (panel.id === 'infoBox') {
+                closeInfoBox();
+            }
+        } else {
+            panel.style.transform = '';
+            panel.style.opacity = '';
+        }
+    }, { passive: true });
+
+    // Mouse drag support for desktop
+    handle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        currentX = 0;
+        panel.classList.add('dragging');
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        currentX = dx;
+        if ((isLeft && dx < 0) || (!isLeft && dx > 0)) {
+            panel.style.transform = `translateX(${dx}px)`;
+            panel.style.opacity = Math.max(0.3, 1 - Math.abs(dx) / 200);
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        panel.classList.remove('dragging');
+        const shouldDismiss = isLeft ? currentX < -threshold : currentX > threshold;
+        if (shouldDismiss) {
+            panel.classList.add('hidden-swipe');
+            panel.style.transform = '';
+            panel.style.opacity = '';
+            if (panel.id === 'mapLegend') {
+                document.getElementById('legendRestoreBtn').style.display = '';
+            } else if (panel.id === 'infoBox') {
+                closeInfoBox();
+            }
+        } else {
+            panel.style.transform = '';
+            panel.style.opacity = '';
+        }
+    });
+}
+
+function restoreLegend() {
+    const legend = document.getElementById('mapLegend');
+    if (legend) {
+        legend.classList.remove('hidden-swipe');
+    }
+    document.getElementById('legendRestoreBtn').style.display = 'none';
+}
+
 // ===== Auto Refresh =====
 function startAutoRefresh() {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
@@ -1118,6 +1220,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initFireYearSelect();
     // Start on quakes tab
     switchMapTab('quakes');
+
+    // Init swipe-to-dismiss on legend and info box
+    initSwipeToDismiss(document.getElementById('mapLegend'), 'legendDragHandle', 'left');
+    initSwipeToDismiss(document.getElementById('infoBox'), 'infoDragHandle', 'right');
 
     // Auto-hide sidebar on mobile
     if (window.innerWidth <= 600) {

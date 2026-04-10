@@ -457,6 +457,9 @@
                 <button class="map-btn" onclick="toggleSidebar()" data-i18n-title="btn.sidebar" title="Panel lateral" aria-label="Mostrar/ocultar panel lateral">
                     <i class="fas fa-bars"></i>
                 </button>
+                <button class="map-btn" id="legendRestoreBtn" onclick="restoreLegend()" title="Mostrar simbología" aria-label="Mostrar simbología" style="display:none;">
+                    <i class="fas fa-map-signs"></i>
+                </button>
             </div>
 
             <!-- Legend -->
@@ -539,6 +542,7 @@
 
             <!-- Info box -->
             <div class="info-box" id="infoBox" style="display: none;">
+                <div class="legend-drag-handle" id="infoDragHandle"></div>
                 <button class="close-btn" onclick="closeInfoBox()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -563,5 +567,9 @@
 
     <script src="lang.js"></script>
     <script src="app.js"></script>
+
+    <!-- GoatCounter - analytics privado (dashboard en goatcounter.com) -->
+    <script data-goatcounter="https://alefuenhi.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
