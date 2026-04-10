@@ -312,6 +312,10 @@ a:hover {
     opacity: 0;
 }
 
+.sidebar-close-btn {
+    display: none;
+}
+
 /* Panel */
 .panel {
     border-bottom: 1px solid var(--border-color);
@@ -1102,6 +1106,29 @@ a:hover {
     /* Footer hidden on mobile */
     .footer {
         display: none;
+    }
+
+    /* Sidebar close button (mobile only) */
+    .sidebar-close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 12px;
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+        font-family: var(--font);
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .sidebar-close-btn:active {
+        background: rgba(239, 68, 68, 0.3);
     }
 
     /* Sidebar full-screen sheet */

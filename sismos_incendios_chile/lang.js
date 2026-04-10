@@ -260,6 +260,12 @@ const TRANSLATIONS = {
         pt: 'Painel lateral',
         en: 'Sidebar'
     },
+    'btn.close': {
+        es: 'Cerrar',
+        arn: 'Müten',
+        pt: 'Fechar',
+        en: 'Close'
+    },
 
     // ===== Footer =====
     'footer.data': {
