@@ -995,25 +995,209 @@ a:hover {
 }
 
 @media (max-width: 600px) {
+    /* Header compact */
     .header {
-        padding: 0 12px;
+        padding: 0 10px;
+        height: 50px;
+    }
+
+    .logo {
+        gap: 8px;
+    }
+
+    .logo i {
+        font-size: 18px;
     }
 
     .logo h1 {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .logo .subtitle {
         display: none;
     }
 
+    .header-center {
+        display: none;
+    }
+
+    .header-right {
+        gap: 6px;
+    }
+
+    .live-indicator {
+        font-size: 9px;
+    }
+
+    .update-time {
+        display: none;
+    }
+
+    .lang-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    .lang-btn span {
+        display: none;
+    }
+
+    .lang-btn i.fa-chevron-down {
+        display: none;
+    }
+
+    /* Main container */
+    .main-container {
+        height: calc(100vh - 50px);
+    }
+
+    /* Footer hidden on mobile */
+    .footer {
+        display: none;
+    }
+
+    /* Sidebar full-screen sheet */
     .sidebar {
-        width: 300px;
-        min-width: 300px;
+        position: fixed;
+        left: 0;
+        top: 50px;
+        width: 100%;
+        min-width: 100%;
+        height: calc(100vh - 50px);
+        z-index: 950;
+        box-shadow: none;
+        border-right: none;
+        transition: transform 0.3s ease, opacity 0.2s ease;
+        transform: translateX(0);
+        margin-left: 0;
     }
 
     .sidebar.hidden {
-        margin-left: -300px;
+        transform: translateX(-100%);
+        margin-left: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Panel spacing for touch */
+    .panel-header {
+        padding: 14px;
+        min-height: 48px;
+    }
+
+    .panel-content {
+        padding: 10px 14px 14px;
+    }
+
+    /* Map tabs */
+    .map-tabs {
+        top: 8px;
+        border-radius: 8px;
+    }
+
+    .map-tab {
+        padding: 7px 16px;
+        font-size: 12px;
+    }
+
+    /* Map controls */
+    .map-overlay-controls {
+        top: 8px;
+        right: 8px;
+        gap: 6px;
+    }
+
+    .map-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    /* Legend collapsible on mobile */
+    .map-legend {
+        bottom: 6px;
+        left: 6px;
+        padding: 6px 8px;
+        max-height: 40vh;
+        overflow-y: auto;
+        font-size: 10px;
+        max-width: calc(100vw - 12px);
+    }
+
+    .map-legend h4 {
+        font-size: 10px;
+        margin-bottom: 4px;
+    }
+
+    .legend-item {
+        font-size: 10px;
+        gap: 5px;
+    }
+
+    /* Info box full width on mobile */
+    .info-box {
+        bottom: 6px;
+        right: 6px;
+        left: 6px;
+        width: auto;
+        padding: 14px;
+    }
+
+    .info-mag {
+        font-size: 22px;
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+    }
+
+    .info-title h3 {
+        font-size: 13px;
+    }
+
+    .info-details {
+        gap: 6px;
+    }
+
+    .info-detail {
+        padding: 8px;
+    }
+
+    .info-detail-value {
+        font-size: 12px;
+    }
+
+    /* Quake list items touch friendly */
+    .quake-item {
+        padding: 12px 14px;
+    }
+
+    /* Leaflet zoom controls */
+    .leaflet-control-zoom {
+        margin-top: 52px !important;
+        margin-left: 8px !important;
+    }
+
+    /* Language dropdown */
+    .lang-dropdown {
+        right: 4px;
+        top: 48px;
+    }
+
+    /* Fire panel touch */
+    .fire-period-select {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .a11y-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .filter-group select,
+    .filter-group input[type="range"] {
+        min-height: 36px;
     }
 }
 

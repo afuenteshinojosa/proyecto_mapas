@@ -248,12 +248,6 @@ const TRANSLATIONS = {
         pt: 'Centralizar no Chile',
         en: 'Center on Chile'
     },
-    'btn.heatmap': {
-        es: 'Mapa de calor',
-        arn: 'Kütral mapa',
-        pt: 'Mapa de calor',
-        en: 'Heatmap'
-    },
     'btn.plates': {
         es: 'Placas tectónicas',
         arn: 'Mapu trawa',

@@ -2,7 +2,7 @@
 let map, markersLayer, platesLayer, fireLayer, fireMarkersLayer, selectedQuake = null;
 let allQuakes = [];
 let allFires = [];
-let heatLayer = null;
+
 let autoRefreshInterval = null;
 let platesVisible = true;
 let fireLayerVisible = false;
@@ -236,7 +236,7 @@ function updateMap(quakes) {
                 width: ${size}px;
                 height: ${size}px;
                 background: radial-gradient(circle, ${color}cc, ${color}66);
-                border: 2px solid ${color};
+                border: 2.5px solid ${depthColor};
                 border-radius: 50%;
                 box-shadow: 0 0 ${size}px ${color}66, 0 0 ${size * 2}px ${color}22;
                 ${isRecent ? 'animation: quake-anim 2s ease-out infinite;' : ''}
@@ -728,73 +728,6 @@ function showPlateFromSidebar(key) {
     }
 }
 
-let heatmapMode = false;
-function toggleHeatmap() {
-    heatmapMode = !heatmapMode;
-    document.getElementById('heatmapBtn').classList.toggle('active', heatmapMode);
-
-    if (heatmapMode) {
-        // Build heatmap data from visible layers
-        const heatData = [];
-
-        if (currentViewMode !== 'fires') {
-            const minMag = parseFloat(document.getElementById('minMag').value);
-            const maxDepth = parseFloat(document.getElementById('maxDepth').value);
-            const filtered = allQuakes.filter(q => q.mag >= minMag && q.depth <= maxDepth);
-            filtered.forEach(q => {
-                // intensity based on magnitude (0-1 range)
-                const intensity = Math.min(1, q.mag / 8);
-                heatData.push([q.lat, q.lng, intensity]);
-            });
-        }
-
-        if (currentViewMode !== 'quakes') {
-            allFires.forEach(f => {
-                // fire confidence as intensity
-                const intensity = Math.min(1, (f.confidence || 50) / 100);
-                heatData.push([f.lat, f.lng, intensity]);
-            });
-        }
-
-        // Remove existing heat layer
-        if (heatLayer) {
-            map.removeLayer(heatLayer);
-        }
-
-        // Hide point markers
-        map.removeLayer(markersLayer);
-        map.removeLayer(fireMarkersLayer);
-
-        // Create real density heatmap using leaflet.heat
-        if (typeof L.heatLayer === 'function') {
-            heatLayer = L.heatLayer(heatData, {
-                radius: 35,
-                blur: 25,
-                maxZoom: 10,
-                max: 1.0,
-                gradient: {
-                    0.1: '#43e97b',
-                    0.3: '#f9d423',
-                    0.5: '#ff6b35',
-                    0.7: '#e63946',
-                    1.0: '#9d0208'
-                }
-            }).addTo(map);
-        }
-    } else {
-        // Remove heatmap, restore markers
-        if (heatLayer) {
-            map.removeLayer(heatLayer);
-            heatLayer = null;
-        }
-        if (currentViewMode === 'quakes') {
-            markersLayer.addTo(map);
-        } else {
-            fireMarkersLayer.addTo(map);
-        }
-        applyFilters();
-    }
-}
 
 // ===== Update Time =====
 function updateLastUpdate() {
@@ -985,11 +918,6 @@ function switchMapTab(tab) {
         applyFilters();
     }
 
-    // Re-render heatmap if active
-    if (heatmapMode) {
-        heatmapMode = false;
-        toggleHeatmap();
-    }
 }
 
 function initFireYearSelect() {
@@ -1183,6 +1111,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initFireYearSelect();
     // Start on quakes tab
     switchMapTab('quakes');
+
+    // Auto-hide sidebar on mobile
+    if (window.innerWidth <= 600) {
+        document.getElementById('sidebar').classList.add('hidden');
+    }
 
     // Close lang dropdown on outside click
     document.addEventListener('click', (e) => {
