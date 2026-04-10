@@ -775,14 +775,34 @@ function getFireSize(brightness) {
 
 async function fetchFires() {
     const dayRange = getFireDayRange();
-    // Use NASA FIRMS direct CSV download (VIIRS SNPP, no key needed)
-    // South America region, then filter to Chile bounding box
-    const url = `https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/csv/SUOMI_VIIRS_C2_South_America_${dayRange}.csv`;
+    // NASA FIRMS CSV does not allow CORS, so we use proxy services
+    const baseUrl = `https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/csv/SUOMI_VIIRS_C2_South_America_${dayRange}.csv`;
+    const proxyUrls = [
+        `https://corsproxy.io/?url=${encodeURIComponent(baseUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(baseUrl)}`
+    ];
+
+    let text = null;
+    for (const proxyUrl of proxyUrls) {
+        try {
+            const response = await fetch(proxyUrl);
+            if (response.ok) {
+                text = await response.text();
+                break;
+            }
+        } catch (e) {
+            console.warn('FIRMS proxy failed, trying next:', e.message);
+        }
+    }
+
+    if (!text) {
+        console.error('All FIRMS proxy attempts failed');
+        allFires = [];
+        renderFireMarkers();
+        return;
+    }
 
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const text = await response.text();
         const lines = text.trim().split('\n');
         if (lines.length < 2) { allFires = []; renderFireMarkers(); return; }
 
@@ -815,7 +835,7 @@ async function fetchFires() {
         }
         renderFireMarkers();
     } catch (err) {
-        console.error('Error fetching fire data:', err);
+        console.error('Error parsing fire data:', err);
         allFires = [];
         renderFireMarkers();
     }
