@@ -88,11 +88,20 @@ function formatDateShort(timestamp) {
 
 // ===== Initialize Map =====
 function initMap() {
+    // South America bounds
+    const southAmericaBounds = L.latLngBounds(
+        L.latLng(-60, -90),  // SW corner
+        L.latLng(15, -30)    // NE corner
+    );
+
     map = L.map('map', {
         center: [-33.5, -70.5],
         zoom: 5,
         zoomControl: true,
-        attributionControl: true
+        attributionControl: true,
+        maxBounds: southAmericaBounds,
+        maxBoundsViscosity: 0.8,
+        minZoom: 3
     });
 
     // Dark tile layer - CartoDB Dark Matter
