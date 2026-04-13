@@ -18,7 +18,6 @@ const CHILE_BOUNDS = {
 };
 
 const USGS_API = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
-const FIRMS_API = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv';
 
 // ===== Color Helpers =====
 function getMagColor(mag) {
@@ -747,10 +746,10 @@ function updateLastUpdate() {
 
 // ===== Fire Layer (NASA FIRMS open CSV) =====
 function getFireDayRange() {
-    const period = document.getElementById('firePeriod')?.value || '24h';
-    if (period === '48h') return '48h';
-    if (period === '7d' || period === 'custom') return '7d';
-    return '24h';
+    const period = document.getElementById('firePeriod')?.value || '1';
+    if (period === '2') return 2;
+    if (period === '5' || period === 'custom') return 5;
+    return 1;
 }
 
 function getFireConfidenceColor(confidence) {
@@ -775,34 +774,14 @@ function getFireSize(brightness) {
 
 async function fetchFires() {
     const dayRange = getFireDayRange();
-    // NASA FIRMS CSV does not allow CORS, so we use proxy services
-    const baseUrl = `https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/csv/SUOMI_VIIRS_C2_South_America_${dayRange}.csv`;
-    const proxyUrls = [
-        `https://corsproxy.io/?url=${encodeURIComponent(baseUrl)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(baseUrl)}`
-    ];
-
-    let text = null;
-    for (const proxyUrl of proxyUrls) {
-        try {
-            const response = await fetch(proxyUrl);
-            if (response.ok) {
-                text = await response.text();
-                break;
-            }
-        } catch (e) {
-            console.warn('FIRMS proxy failed, trying next:', e.message);
-        }
-    }
-
-    if (!text) {
-        console.error('All FIRMS proxy attempts failed');
-        allFires = [];
-        renderFireMarkers();
-        return;
-    }
+    // FIRMS Area API with MAP_KEY — returns only Chile bounding box data
+    const FIRMS_MAP_KEY = 'c76d5bece8639f6bdd306c51f486f91f';
+    const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_MAP_KEY}/VIIRS_SNPP_NRT/-80,-56,-64,-17/${dayRange}`;
 
     try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
         const lines = text.trim().split('\n');
         if (lines.length < 2) { allFires = []; renderFireMarkers(); return; }
 
@@ -816,14 +795,12 @@ async function fetchFires() {
         const frpIdx = headers.indexOf('frp');
 
         allFires = [];
-        // Chile bounding box: lat -56 to -17, lng -80 to -64
         for (let i = 1; i < lines.length; i++) {
             const cols = lines[i].split(',');
             if (cols.length < headers.length) continue;
             const lat = parseFloat(cols[latIdx]);
             const lng = parseFloat(cols[lngIdx]);
             if (isNaN(lat) || isNaN(lng)) continue;
-            if (lat < -56 || lat > -17 || lng < -80 || lng > -64) continue;
             allFires.push({
                 lat, lng,
                 brightness: parseFloat(cols[brightIdx]) || 320,
@@ -835,7 +812,7 @@ async function fetchFires() {
         }
         renderFireMarkers();
     } catch (err) {
-        console.error('Error parsing fire data:', err);
+        console.error('Error fetching fire data:', err);
         allFires = [];
         renderFireMarkers();
     }

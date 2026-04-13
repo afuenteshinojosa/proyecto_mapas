@@ -633,6 +633,9 @@ const TRANSLATIONS = {
     'fires.layer7d': {
         es: 'Últimos 7 días', arn: '7 antü', pt: 'Últimos 7 dias', en: 'Last 7 days'
     },
+    'fires.layer5d': {
+        es: 'Últimos 5 días', arn: '5 antü', pt: 'Últimos 5 dias', en: 'Last 5 days'
+    },
     'fires.layerCustom': {
         es: 'Mes / Año específico', arn: 'Küyen / Tripantu', pt: 'Mês / Ano específico', en: 'Specific month / year'
     },
