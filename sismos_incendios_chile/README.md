@@ -13,7 +13,7 @@
 
 ## 🔗 Acceso a la Aplicación
 
-### 🌐 [Abrir NaturaChile](https://afuenteshinojosa.github.io/proyecto_mapas/sismos_incendios_chile/)
+### 🌐 [Abrir portal de incendios y sismos en Chile](https://afuenteshinojosa.github.io/proyecto_mapas/sismos_incendios_chile/)
 
 > Plataforma interactiva de monitoreo sísmico y de incendios forestales en territorio chileno, con datos en tiempo real del servicio geológico de EE.UU. (USGS) y NASA FIRMS.
 
