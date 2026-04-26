@@ -88,10 +88,9 @@ function formatDateShort(timestamp) {
 
 // ===== Initialize Map =====
 function initMap() {
-    // South America bounds
     const southAmericaBounds = L.latLngBounds(
-        L.latLng(-60, -90),  // SW corner
-        L.latLng(15, -30)    // NE corner
+        L.latLng(-60, -90),
+        L.latLng(15, -30)
     );
 
     map = L.map('map', {
@@ -104,24 +103,20 @@ function initMap() {
         minZoom: 3
     });
 
-    // Dark tile layer - CartoDB Dark Matter
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 18
     }).addTo(map);
 
-    // ===== Tectonic Plates Layer =====
     platesLayer = L.layerGroup().addTo(map);
     buildPlatesLayer();
 
-    // ===== Fire Layer =====
     fireLayer = L.layerGroup();
     fireMarkersLayer = L.layerGroup();
 
     markersLayer = L.layerGroup().addTo(map);
 
-    // Add major cities
     const cities = [
         { name: 'Santiago', lat: -33.4489, lng: -70.6693 },
         { name: 'Valparaíso', lat: -33.0472, lng: -71.6127 },
@@ -235,7 +230,6 @@ function updateMap(quakes) {
         const color = getMagColor(q.mag);
         const depthColor = getDepthColor(q.depth);
 
-        // Determine if this is a recent quake (< 1 hour)
         const isRecent = (Date.now() - q.time) < 3600000;
 
         const icon = L.divIcon({
@@ -311,7 +305,6 @@ function updateList(quakes) {
     }).join('');
 }
 
-// sanitize user-facing text to prevent XSS
 function sanitizeHTML(str) {
     const div = document.createElement('div');
     div.appendChild(document.createTextNode(str));
@@ -322,7 +315,6 @@ function sanitizeHTML(str) {
 function updateStats(quakes) {
     document.getElementById('totalCount').textContent = quakes.length;
 
-    // Update label to match selected period
     const period = parseInt(document.getElementById('timePeriod').value);
     const periodLabels = { 1: '1h', 24: '24h', 168: '7d', 720: '30d' };
     const periodKey = periodLabels[period] || period + 'h';
@@ -335,7 +327,6 @@ function updateStats(quakes) {
         document.getElementById('maxMag').textContent = maxMag.toFixed(1);
         document.getElementById('avgDepth').textContent = avgDepth.toFixed(0) + ' km';
 
-        // Screen reader announcement
         announceToScreenReader(t('a11y.announce.quakeUpdate', { n: quakes.length, mag: maxMag.toFixed(1) }));
     } else {
         document.getElementById('maxMag').textContent = '—';
@@ -411,10 +402,8 @@ function showQuakeInfo(q) {
     infoBox.style.display = 'block';
     map.flyTo([q.lat, q.lng], 8, { duration: 0.8 });
 
-    // Speak if TTS active
     speakQuakeDetail(q);
 
-    // Highlight in list
     document.querySelectorAll('.quake-item').forEach(el => {
         el.classList.toggle('active', el.dataset.id === q.id);
     });
@@ -492,7 +481,6 @@ function togglePlates() {
 }
 
 function buildPlatesLayer() {
-    // === Plate boundaries (more detailed) ===
     const plates = [
         {
             name: 'nazca',
@@ -606,9 +594,7 @@ function buildPlatesLayer() {
         }
     ];
 
-    // Draw plate fills and boundaries
     plates.forEach(plate => {
-        // Translucent fill
         L.polygon(plate.fill, {
             color: 'transparent',
             fillColor: plate.color,
@@ -616,7 +602,6 @@ function buildPlatesLayer() {
             interactive: false
         }).addTo(platesLayer);
 
-        // Boundary line
         L.polyline(plate.boundary, {
             color: plate.color,
             weight: 2.5,
@@ -624,7 +609,6 @@ function buildPlatesLayer() {
             dashArray: '10, 6'
         }).addTo(platesLayer).on('click', () => showPlateInfo({ name: plate.label(), color: plate.color, info: plate.info() }));
 
-        // Plate label on map
         const labelIcon = L.divIcon({
             className: 'plate-label',
             html: `<div style="
@@ -645,7 +629,6 @@ function buildPlatesLayer() {
         L.marker(plate.labelPos, { icon: labelIcon, interactive: false }).addTo(platesLayer);
     });
 
-    // === Triple Junction point (Chile Triple Junction ~46.3°S) ===
     const tripleIcon = L.divIcon({
         className: 'triple-junction',
         html: `<div style="
@@ -667,7 +650,6 @@ function buildPlatesLayer() {
             </div>
         `, { direction: 'top', offset: [0, -10] });
 
-    // === Subduction zone indicators (teeth marks) ===
     const subductionPoints = [
         [-19, -72.2], [-22, -71], [-25, -71.1], [-28, -71.6],
         [-31, -72.1], [-34, -72.7], [-37, -73.7], [-40, -75],
@@ -745,7 +727,6 @@ function showPlateFromSidebar(key) {
     }
 }
 
-
 // ===== Update Time =====
 function updateLastUpdate() {
     const now = new Date();
@@ -753,7 +734,7 @@ function updateLastUpdate() {
         `${t('header.lastUpdate')}: ${now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
 }
 
-// ===== Fire Layer (NASA FIRMS open CSV) =====
+// ===== Fire Layer (NASA FIRMS) =====
 function getFireDayRange() {
     const period = document.getElementById('firePeriod')?.value || '1';
     if (period === '2') return 2;
@@ -773,6 +754,65 @@ function getFireConfidenceColor(confidence) {
     return '#ffbb33';
 }
 
+// ===== NEW: Fire confidence label helpers =====
+function getFireConfidenceLabel(confidence) {
+    if (typeof confidence === 'string') {
+        if (confidence === 'high' || confidence === 'h') {
+            return {
+                label: 'Alta confianza',
+                emoji: '🔴',
+                desc: 'Detección muy probable. Alta temperatura y señal satelital clara.',
+                scale: 3
+            };
+        }
+        if (confidence === 'nominal' || confidence === 'n') {
+            return {
+                label: 'Confianza nominal',
+                emoji: '🟠',
+                desc: 'Detección probable. Señal moderada, puede haber interferencia.',
+                scale: 2
+            };
+        }
+        return {
+            label: 'Baja confianza',
+            emoji: '🟡',
+            desc: 'Posible foco de calor. Señal débil o posible reflexión solar.',
+            scale: 1
+        };
+    }
+    const c = parseInt(confidence) || 50;
+    if (c >= 80) {
+        return {
+            label: `Alta confianza (${c}%)`,
+            emoji: '🔴',
+            desc: 'Detección muy probable. Alta temperatura y señal satelital clara.',
+            scale: 3
+        };
+    }
+    if (c >= 50) {
+        return {
+            label: `Confianza nominal (${c}%)`,
+            emoji: '🟠',
+            desc: 'Detección probable. Señal moderada, puede haber interferencia.',
+            scale: 2
+        };
+    }
+    return {
+        label: `Baja confianza (${c}%)`,
+        emoji: '🟡',
+        desc: 'Posible foco de calor. Señal débil o posible reflexión solar.',
+        scale: 1
+    };
+}
+
+function getBrightnessDesc(brightness) {
+    const b = parseFloat(brightness) || 320;
+    if (b >= 370) return '<strong style="color:#ff2200;">Muy intenso</strong> — fuego activo de gran magnitud probable';
+    if (b >= 340) return '<strong style="color:#ff8800;">Intenso</strong> — temperatura elevada, fuego activo probable';
+    if (b >= 310) return '<strong style="color:#ffbb33;">Moderado</strong> — posible inicio de incendio o foco pequeño';
+    return '<strong style="color:#aaa;">Leve</strong> — anomalía térmica débil, puede no ser incendio';
+}
+
 function getFireSize(brightness) {
     const b = parseFloat(brightness) || 320;
     if (b < 310) return 6;
@@ -781,9 +821,9 @@ function getFireSize(brightness) {
     return 16;
 }
 
+// ===== Fetch Fires =====
 async function fetchFires() {
     const dayRange = getFireDayRange();
-    // FIRMS Area API with MAP_KEY — returns only Chile bounding box data
     const FIRMS_MAP_KEY = 'c76d5bece8639f6bdd306c51f486f91f';
     const url = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_MAP_KEY}/VIIRS_SNPP_NRT/-80,-56,-64,-17/${dayRange}`;
 
@@ -827,14 +867,15 @@ async function fetchFires() {
     }
 }
 
+// ===== Render Fire Markers (IMPROVED) =====
 function renderFireMarkers() {
     fireMarkersLayer.clearLayers();
 
     allFires.forEach(f => {
         const color = getFireConfidenceColor(f.confidence);
         const size = getFireSize(f.brightness);
+        const conf = getFireConfidenceLabel(f.confidence);
 
-        // Diamond/rotated-square shape to differentiate from quake circles
         const icon = L.divIcon({
             className: 'fire-marker',
             html: `<div style="
@@ -851,20 +892,29 @@ function renderFireMarkers() {
             iconAnchor: [size / 2, size / 2]
         });
 
+        // Tooltip mejorado: muestra confianza de forma legible
+        const timeStr = f.time ? f.time.slice(0, 2) + ':' + f.time.slice(2, 4) + ' UTC' : '';
         const marker = L.marker([f.lat, f.lng], { icon })
             .bindTooltip(`
-                <div style="text-align:center; font-family:'Inter',sans-serif;">
-                    <strong style="color:${color};">🔥 Foco de calor</strong><br>
-                    <span style="font-size:11px;">Brillo: ${f.brightness.toFixed(0)} K</span><br>
-                    <span style="font-size:11px;">FRP: ${f.frp.toFixed(1)} MW</span><br>
-                    <span style="font-size:10px; opacity:0.7;">${f.date} ${f.time}</span>
+                <div style="font-family:'Inter',sans-serif; min-width:190px; max-width:240px;">
+                    <div style="font-weight:600; color:${color}; font-size:13px; margin-bottom:3px;">
+                        ${conf.emoji} ${conf.label}
+                    </div>
+                    <div style="font-size:11px; color:rgba(255,255,255,0.75); margin-bottom:6px; line-height:1.4;">
+                        ${conf.desc}
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.12); padding-top:5px; font-size:11px; line-height:1.6;">
+                        🌡️ Brillo: <strong>${f.brightness.toFixed(0)} K</strong><br>
+                        ⚡ FRP: <strong>${f.frp.toFixed(1)} MW</strong><br>
+                        <span style="opacity:0.6;">${f.date} ${timeStr}</span>
+                    </div>
                 </div>
-            `, { direction: 'top', offset: [0, -size / 2 - 4] });
+            `, { direction: 'top', offset: [0, -size / 2 - 4] })
+            .on('click', () => showFireInfo(f));
 
         fireMarkersLayer.addLayer(marker);
     });
 
-    // Update fire count in legend if visible
     const fireLegend = document.getElementById('fireLegend');
     if (fireLegend && fireLayerVisible) {
         const fireCountEl = document.getElementById('fireCount');
@@ -872,6 +922,203 @@ function renderFireMarkers() {
     }
 }
 
+// ===== Show Fire Detail (NEW) =====
+function showFireInfo(f) {
+    const infoBox = document.getElementById('infoBox');
+    const content = document.getElementById('infoContent');
+
+    const color = getFireConfidenceColor(f.confidence);
+    const conf = getFireConfidenceLabel(f.confidence);
+    const brightDesc = getBrightnessDesc(f.brightness);
+    const timeStr = f.time ? f.time.slice(0, 2) + ':' + f.time.slice(2, 4) + ' UTC' : '';
+
+    // Barra de nivel de confianza (1–3 bloques rellenos)
+    const scaleBlocks = [1, 2, 3].map(n => `
+        <div style="
+            width: 26px; height: 10px;
+            border-radius: 3px;
+            background: ${n <= conf.scale ? color : 'rgba(255,255,255,0.1)'};
+            border: 1px solid ${n <= conf.scale ? color : 'rgba(255,255,255,0.15)'};
+        "></div>
+    `).join('');
+
+    content.innerHTML = `
+        <div class="info-header">
+            <div class="info-mag" style="
+                background: ${color}22;
+                color: ${color};
+                border: 2px solid ${color}44;
+                font-size: 22px;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">🔥</div>
+            <div class="info-title">
+                <h3>Foco de calor detectado</h3>
+                <div class="info-time">${f.date}${timeStr ? ' · ' + timeStr : ''} · NASA VIIRS</div>
+            </div>
+        </div>
+
+        <!-- Confidence badge -->
+        <div style="
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: ${color}18;
+            border: 1px solid ${color}44;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin: 10px 0;
+        ">
+            <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">${conf.emoji}</span>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; color: ${color}; font-size: 13px; margin-bottom: 2px;">
+                    ${conf.label}
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 6px;">
+                    ${conf.desc}
+                </div>
+                <!-- Barra visual de nivel -->
+                <div style="display: flex; gap: 4px; align-items: center;">
+                    ${scaleBlocks}
+                    <span style="font-size: 10px; color: var(--text-muted); margin-left: 4px;">
+                        ${conf.scale === 1 ? 'Nivel bajo' : conf.scale === 2 ? 'Nivel medio' : 'Nivel alto'}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datos técnicos -->
+        <div class="info-details">
+            <div class="info-detail">
+                <div class="info-detail-label">Brillo (Ti4)</div>
+                <div class="info-detail-value">${f.brightness.toFixed(1)} K</div>
+            </div>
+            <div class="info-detail">
+                <div class="info-detail-label">Potencia radiante</div>
+                <div class="info-detail-value">${f.frp.toFixed(1)} MW</div>
+            </div>
+            <div class="info-detail">
+                <div class="info-detail-label">Latitud</div>
+                <div class="info-detail-value">${f.lat.toFixed(4)}°</div>
+            </div>
+            <div class="info-detail">
+                <div class="info-detail-label">Longitud</div>
+                <div class="info-detail-value">${f.lng.toFixed(4)}°</div>
+            </div>
+        </div>
+
+        <!-- Interpretación de brillo -->
+        <div style="
+            margin: 10px 0;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border-left: 3px solid ${color};
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        ">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px; font-size: 12px;">
+                🌡️ Intensidad térmica
+            </div>
+            ${brightDesc}<br>
+            <span style="opacity: 0.75;">El brillo mide la temperatura superficial detectada por el satélite.</span>
+        </div>
+
+        <!-- Escala de referencia visual -->
+        <div style="margin: 10px 0;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
+                Escala de confianza (forma ◆ diamante):
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 11px;">
+                    <span style="
+                        width: 10px; height: 10px; flex-shrink: 0;
+                        background: #ffbb33;
+                        transform: rotate(45deg);
+                        display: inline-block;
+                        border-radius: 1px;
+                        box-shadow: 0 0 4px #ffbb3366;
+                    "></span>
+                    <span style="color: var(--text-secondary);">
+                        <strong style="color: #ffbb33;">Baja</strong> — señal débil, puede ser reflexión solar o industria
+                    </span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 11px;">
+                    <span style="
+                        width: 10px; height: 10px; flex-shrink: 0;
+                        background: #ff8800;
+                        transform: rotate(45deg);
+                        display: inline-block;
+                        border-radius: 1px;
+                        box-shadow: 0 0 4px #ff880066;
+                    "></span>
+                    <span style="color: var(--text-secondary);">
+                        <strong style="color: #ff8800;">Nominal</strong> — señal moderada, detección probable
+                    </span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 11px;">
+                    <span style="
+                        width: 10px; height: 10px; flex-shrink: 0;
+                        background: #ff2200;
+                        transform: rotate(45deg);
+                        display: inline-block;
+                        border-radius: 1px;
+                        box-shadow: 0 0 4px #ff220066;
+                    "></span>
+                    <span style="color: var(--text-secondary);">
+                        <strong style="color: #ff2200;">Alta</strong> — señal clara, fuego activo muy probable
+                    </span>
+                </div>
+            </div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">
+                El tamaño del diamante ◆ indica la intensidad del brillo.
+            </div>
+        </div>
+
+        <!-- Links -->
+        <div class="info-links">
+            <a class="info-link"
+               href="https://firms.modaps.eosdis.nasa.gov/map/#d:24hrs;@${f.lng},${f.lat},12z"
+               target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-satellite"></i> Ver en NASA FIRMS
+            </a>
+            <a class="info-link"
+               href="https://www.conaf.cl/incendios/situacion-actual-y-pronostico-de-incendios/"
+               target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-tree"></i> CONAF
+            </a>
+            <a class="info-link"
+               href="https://web.senapred.cl/alertas-2/"
+               target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-exclamation-triangle"></i> SENAPRED
+            </a>
+        </div>
+
+        <!-- Aviso emergencia -->
+        <div style="
+            margin-top: 10px;
+            padding: 8px 10px;
+            background: rgba(230,57,70,0.1);
+            border: 1px solid rgba(230,57,70,0.3);
+            border-radius: 8px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        ">
+            ⚠️ Los focos de calor son anomalías térmicas detectadas por satélite — pueden incluir
+            incendios forestales, actividad industrial o reflexión solar. Para información oficial
+            y emergencias llama al <strong style="color: #e63946;">130 (CONAF)</strong>.
+        </div>
+    `;
+
+    infoBox.style.display = 'block';
+    map.flyTo([f.lat, f.lng], 11, { duration: 0.8 });
+}
+
+// ===== Fire Layer Controls =====
 function toggleFireLayer() {
     const checkbox = document.getElementById('fireLayerToggle');
     fireLayerVisible = checkbox.checked;
@@ -887,7 +1134,6 @@ function toggleFireLayer() {
 }
 
 function toggleFireLayerBtn() {
-    // Switch to fires tab if on quakes, or back to quakes if on fires
     if (currentViewMode === 'fires') {
         switchMapTab('quakes');
     } else {
@@ -910,7 +1156,6 @@ function updateFireLayer() {
 function switchMapTab(tab) {
     currentViewMode = tab;
 
-    // Update tab buttons
     document.querySelectorAll('.map-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
     });
@@ -932,7 +1177,6 @@ function switchMapTab(tab) {
         markersLayer.addTo(map);
         applyFilters();
     }
-
 }
 
 function initFireYearSelect() {
@@ -945,7 +1189,6 @@ function initFireYearSelect() {
         opt.textContent = y;
         sel.appendChild(opt);
     }
-    // Default to current month
     const monthSel = document.getElementById('fireMonth');
     if (monthSel) monthSel.value = new Date().getMonth();
 }
@@ -992,7 +1235,6 @@ function announceToScreenReader(message) {
     const announcer = document.getElementById('srAnnouncer');
     if (announcer) {
         announcer.textContent = '';
-        // Small delay to ensure screen readers register the change
         setTimeout(() => { announcer.textContent = message; }, 100);
     }
 }
@@ -1004,7 +1246,6 @@ function toggleTTS() {
     btn.classList.toggle('active', ttsActive);
 
     if (ttsActive) {
-        // Read summary of current data
         speakSummary();
     } else {
         window.speechSynthesis.cancel();
@@ -1024,14 +1265,12 @@ function speakSummary() {
     const maxMag = Math.max(...filtered.map(q => q.mag));
     const avgDepth = filtered.reduce((s, q) => s + q.depth, 0) / filtered.length;
 
-    // Build speech text
     let speechText = t('a11y.tts.summary', {
         n: filtered.length,
         maxMag: maxMag.toFixed(1),
         avgDepth: avgDepth.toFixed(0)
     });
 
-    // Add top 3 quakes detail
     const top3 = filtered.slice(0, 3);
     top3.forEach(q => {
         speechText += ' ' + t('a11y.tts.quakeDetail', {
@@ -1043,7 +1282,6 @@ function speakSummary() {
     });
 
     const utterance = new SpeechSynthesisUtterance(speechText);
-    // Try to use correct language for TTS
     const langMap = { es: 'es-CL', arn: 'es-CL', pt: 'pt-BR', en: 'en-US' };
     utterance.lang = langMap[currentLang] || 'es-CL';
     utterance.rate = 0.9;
@@ -1079,7 +1317,6 @@ function toggleKidMode() {
     document.getElementById('kidModeBtn').classList.toggle('active', kidMode);
     document.getElementById('kidInfoBox').style.display = kidMode ? 'block' : 'none';
 
-    // Re-render list with kid descriptions
     applyFilters();
 }
 
@@ -1112,8 +1349,8 @@ function initSwipeToDismiss(panel, handleId, direction) {
     if (!handle || !panel) return;
 
     let startX = 0, startY = 0, currentX = 0, isDragging = false;
-    const threshold = 80; // px to trigger dismiss
-    const isLeft = direction === 'left'; // legend swipes left, info swipes right
+    const threshold = 80;
+    const isLeft = direction === 'left';
 
     handle.addEventListener('touchstart', (e) => {
         isDragging = true;
@@ -1127,10 +1364,8 @@ function initSwipeToDismiss(panel, handleId, direction) {
         if (!isDragging) return;
         const dx = e.touches[0].clientX - startX;
         const dy = e.touches[0].clientY - startY;
-        // Only handle horizontal swipe
         if (Math.abs(dx) > Math.abs(dy)) {
             currentX = dx;
-            // Only allow swipe in dismiss direction
             if ((isLeft && dx < 0) || (!isLeft && dx > 0)) {
                 panel.style.transform = `translateX(${dx}px)`;
                 panel.style.opacity = Math.max(0.3, 1 - Math.abs(dx) / 200);
@@ -1158,7 +1393,6 @@ function initSwipeToDismiss(panel, handleId, direction) {
         }
     }, { passive: true });
 
-    // Mouse drag support for desktop
     handle.addEventListener('mousedown', (e) => {
         isDragging = true;
         startX = e.clientX;
@@ -1211,8 +1445,8 @@ function startAutoRefresh() {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     autoRefreshInterval = setInterval(() => {
         fetchEarthquakes();
-        fetchFires();
-    }, 60000); // Every 60 seconds
+        if (fireLayerVisible) fetchFires();
+    }, 60000);
 }
 
 // ===== Init =====
@@ -1220,23 +1454,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
     initMap();
     fetchEarthquakes();
-    fetchFires(); // Prefetch fire data
+    fetchFires();
     startAutoRefresh();
     renderFireHistoryChart();
     initFireYearSelect();
-    // Start on quakes tab
     switchMapTab('quakes');
 
-    // Init swipe-to-dismiss on legend and info box
     initSwipeToDismiss(document.getElementById('mapLegend'), 'legendDragHandle', 'left');
     initSwipeToDismiss(document.getElementById('infoBox'), 'infoDragHandle', 'right');
 
-    // Auto-hide sidebar on mobile
     if (window.innerWidth <= 600) {
         document.getElementById('sidebar').classList.add('hidden');
     }
 
-    // Close lang dropdown on outside click
     document.addEventListener('click', (e) => {
         const dropdown = document.getElementById('langDropdown');
         const btn = document.getElementById('langBtn');
@@ -1245,7 +1475,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Keyboard navigation for quake list items
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && e.target.classList.contains('quake-item')) {
             const id = e.target.dataset.id;
