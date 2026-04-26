@@ -1122,11 +1122,13 @@ a:hover {
     .map-legend {
         bottom: 6px;
         left: 6px;
-        padding: 6px 8px;
-        max-height: 40vh;
+        padding: 8px 10px;
+        max-height: 55vh;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         font-size: 10px;
-        max-width: calc(50vw - 12px);
+        min-width: 160px;
+        max-width: calc(100vw - 60px); /* deja espacio para los botones de la derecha */
     }
 
     .map-legend h4 {
