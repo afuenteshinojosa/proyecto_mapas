@@ -250,7 +250,6 @@ a:hover {
     background: var(--bg-hover);
 }
 
-/* Wenufoye (Mapuche flag) SVG */
 .wenufoye-flag {
     display: inline-block;
     vertical-align: middle;
@@ -290,22 +289,10 @@ a:hover {
     scrollbar-color: var(--border-color) transparent;
 }
 
-.sidebar::-webkit-scrollbar {
-    width: 6px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 3px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
-}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
 .sidebar.hidden {
     margin-left: -360px;
@@ -454,18 +441,9 @@ a:hover {
     scrollbar-color: var(--border-color) transparent;
 }
 
-.quake-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.quake-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.quake-list::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 3px;
-}
+.quake-list::-webkit-scrollbar { width: 6px; }
+.quake-list::-webkit-scrollbar-track { background: transparent; }
+.quake-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
 /* Quake Item */
 .quake-item {
@@ -478,9 +456,7 @@ a:hover {
     transition: background var(--transition);
 }
 
-.quake-item:hover {
-    background: var(--bg-hover);
-}
+.quake-item:hover { background: var(--bg-hover); }
 
 .quake-item.active {
     background: var(--accent-glow);
@@ -546,7 +522,6 @@ a:hover {
     background: var(--bg-primary);
 }
 
-/* Custom Leaflet overrides */
 .leaflet-control-zoom a {
     background: var(--bg-card) !important;
     color: var(--text-primary) !important;
@@ -697,8 +672,20 @@ a:hover {
     cursor: grabbing;
 }
 
-/* Info box draggable */
+/* Info box — base styles (desktop) */
 .info-box {
+    position: absolute;
+    bottom: 24px;
+    right: 12px;
+    z-index: 800;
+    width: 340px;
+    background: rgba(17, 24, 39, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease;
     touch-action: none;
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
@@ -714,84 +701,33 @@ a:hover {
     pointer-events: none;
 }
 
-.map-legend h4 {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-}
-
-.legend-items {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--text-secondary);
-}
-
-.legend-circle {
-    border-radius: 50%;
-    flex-shrink: 0;
-    box-shadow: 0 0 6px rgba(255,255,255,0.15);
-}
-
-.depth-gradient {
-    height: 8px;
-    border-radius: 4px;
-    background: linear-gradient(to right, #43e97b, #38bdf8, #818cf8, #e63946);
-    margin-bottom: 4px;
-}
-
-.depth-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    color: var(--text-muted);
-}
-
-/* Info Box */
-.info-box {
-    position: absolute;
-    bottom: 24px;
-    right: 12px;
-    z-index: 800;
-    width: 340px;
-    background: rgba(17, 24, 39, 0.95);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    animation: slideUp 0.3s ease;
-}
-
 @keyframes slideUp {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
 
+/* Botón cerrar — siempre visible y por encima del contenido */
 .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: var(--text-muted);
+    position: sticky;
+    top: 0;
+    float: right;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-secondary);
     cursor: pointer;
-    font-size: 14px;
-    padding: 4px;
+    font-size: 13px;
+    padding: 5px 8px;
+    margin: -4px -4px 8px 8px;
+    z-index: 10;
+    line-height: 1;
+    transition: all var(--transition);
 }
 
 .close-btn:hover {
     color: var(--text-primary);
+    background: var(--bg-hover);
+    border-color: var(--accent);
 }
 
 .info-header {
@@ -811,16 +747,19 @@ a:hover {
     align-items: center;
     justify-content: center;
     border-radius: 14px;
+    flex-shrink: 0;
 }
 
 .info-title {
     flex: 1;
+    min-width: 0;
 }
 
 .info-title h3 {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 4px;
+    word-break: break-word;
 }
 
 .info-title .info-time {
@@ -860,6 +799,7 @@ a:hover {
     margin-top: 12px;
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .info-link {
@@ -873,6 +813,8 @@ a:hover {
     font-weight: 500;
     color: var(--accent);
     transition: all var(--transition);
+    white-space: nowrap;
+    min-width: 80px;
 }
 
 .info-link:hover {
@@ -922,7 +864,7 @@ a:hover {
     color: var(--text-muted);
 }
 
-/* ===== Custom Marker Popup ===== */
+/* ===== Custom Leaflet Popup ===== */
 .leaflet-popup-content-wrapper {
     background: var(--bg-card) !important;
     color: var(--text-primary) !important;
@@ -942,7 +884,22 @@ a:hover {
     font-size: 13px !important;
 }
 
-/* Earthquake pulse animation on map */
+/* Leaflet tooltip override */
+.leaflet-tooltip {
+    background: rgba(17, 24, 39, 0.97) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
+    padding: 8px 10px !important;
+    max-width: 260px !important;
+}
+
+.leaflet-tooltip-top::before {
+    border-top-color: var(--border-color) !important;
+}
+
+/* Earthquake pulse animation */
 .quake-pulse {
     border-radius: 50%;
     animation: quake-anim 2s ease-out infinite;
@@ -954,9 +911,7 @@ a:hover {
     100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
 }
 
-/* ===== Responsive ===== */
-
-/* Plate cards in sidebar */
+/* ===== Plate cards ===== */
 .plate-card {
     display: flex;
     align-items: center;
@@ -1014,7 +969,7 @@ a:hover {
     margin-right: 4px;
 }
 
-/* ===== Responsive (continued) ===== */
+/* ===== Responsive — tablet ===== */
 @media (max-width: 900px) {
     .sidebar {
         position: absolute;
@@ -1024,7 +979,7 @@ a:hover {
         z-index: 900;
         box-shadow: 4px 0 24px rgba(0,0,0,0.5);
     }
-    
+
     .sidebar.hidden {
         margin-left: -360px;
     }
@@ -1046,6 +1001,7 @@ a:hover {
     }
 }
 
+/* ===== Responsive — mobile ===== */
 @media (max-width: 600px) {
     /* Header compact */
     .header {
@@ -1053,50 +1009,25 @@ a:hover {
         height: 50px;
     }
 
-    .logo {
-        gap: 8px;
-    }
+    .logo { gap: 8px; }
+    .logo i { font-size: 18px; }
+    .logo h1 { font-size: 14px; }
+    .logo .subtitle { display: none; }
+    .header-center { display: none; }
 
-    .logo i {
-        font-size: 18px;
-    }
+    .header-right { gap: 6px; }
 
-    .logo h1 {
-        font-size: 14px;
-    }
+    .live-indicator { font-size: 9px; }
 
-    .logo .subtitle {
-        display: none;
-    }
-
-    .header-center {
-        display: none;
-    }
-
-    .header-right {
-        gap: 6px;
-    }
-
-    .live-indicator {
-        font-size: 9px;
-    }
-
-    .update-time {
-        display: none;
-    }
+    .update-time { display: none; }
 
     .lang-btn {
         padding: 4px 8px;
         font-size: 11px;
     }
 
-    .lang-btn span {
-        display: none;
-    }
-
-    .lang-btn i.fa-chevron-down {
-        display: none;
-    }
+    .lang-btn span { display: none; }
+    .lang-btn i.fa-chevron-down { display: none; }
 
     /* Main container */
     .main-container {
@@ -1104,11 +1035,9 @@ a:hover {
     }
 
     /* Footer hidden on mobile */
-    .footer {
-        display: none;
-    }
+    .footer { display: none; }
 
-    /* Sidebar close button (mobile only) */
+    /* Sidebar close button */
     .sidebar-close-btn {
         display: flex;
         align-items: center;
@@ -1154,7 +1083,7 @@ a:hover {
         pointer-events: none;
     }
 
-    /* Panel spacing for touch */
+    /* Panel spacing */
     .panel-header {
         padding: 14px;
         min-height: 48px;
@@ -1189,7 +1118,7 @@ a:hover {
         border-radius: 8px;
     }
 
-    /* Legend collapsible on mobile */
+    /* Legend */
     .map-legend {
         bottom: 6px;
         left: 6px;
@@ -1197,7 +1126,7 @@ a:hover {
         max-height: 40vh;
         overflow-y: auto;
         font-size: 10px;
-        max-width: calc(100vw - 12px);
+        max-width: calc(50vw - 12px);
     }
 
     .map-legend h4 {
@@ -1210,19 +1139,86 @@ a:hover {
         gap: 5px;
     }
 
-    /* Info box full width on mobile */
+    /* ============================================
+       INFO BOX — móvil: sheet desde abajo
+       ============================================ */
     .info-box {
-        bottom: 6px;
-        right: 6px;
-        left: 6px;
-        width: auto;
-        padding: 14px;
+        /* Ocupa el ancho completo, pegado al fondo */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 1200;
+
+        /* Altura máxima con scroll interno */
+        max-height: 75vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+
+        /* Redondeado solo arriba, como un bottom sheet */
+        border-radius: 16px 16px 0 0;
+        border: none;
+        border-top: 1px solid var(--border-color);
+
+        padding: 0;          /* el padding lo maneja info-box-inner */
+        animation: sheetUp 0.3s ease;
     }
 
+    @keyframes sheetUp {
+        from { transform: translateY(100%); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    /* Handle visual de drag encima del contenido */
+    .info-box::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: var(--border-color);
+        border-radius: 2px;
+        margin: 10px auto 0;
+    }
+
+    /* Botón cerrar — fijo dentro del sheet, arriba a la derecha */
+    .close-btn {
+        position: fixed;
+        top: auto;
+        /* Calculamos desde abajo: 75vh - altura aproximada del botón */
+        bottom: calc(75vh - 44px);
+        right: 12px;
+        z-index: 1300;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    /* Añadir texto "Cerrar" al botón en móvil */
+    .close-btn::after {
+        content: 'Cerrar';
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    /* Padding interior del contenido del infoBox */
+    #infoContent {
+        padding: 12px 14px 20px;
+    }
+
+    /* Info header más compacto */
     .info-mag {
-        font-size: 22px;
-        width: 50px;
-        height: 50px;
+        font-size: 20px;
+        width: 46px;
+        height: 46px;
         border-radius: 10px;
     }
 
@@ -1230,7 +1226,13 @@ a:hover {
         font-size: 13px;
     }
 
+    .info-title .info-time {
+        font-size: 10px;
+    }
+
+    /* Grid de detalles: 2 columnas en móvil */
     .info-details {
+        grid-template-columns: 1fr 1fr;
         gap: 6px;
     }
 
@@ -1242,12 +1244,25 @@ a:hover {
         font-size: 12px;
     }
 
-    /* Quake list items touch friendly */
+    /* Links en fila scrollable si no caben */
+    .info-links {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .info-link {
+        flex: 1 1 auto;
+        min-width: 70px;
+        padding: 7px 6px;
+        font-size: 10px;
+    }
+
+    /* Quake list touch friendly */
     .quake-item {
         padding: 12px 14px;
     }
 
-    /* Leaflet zoom controls */
+    /* Leaflet zoom */
     .leaflet-control-zoom {
         margin-top: 52px !important;
         margin-left: 8px !important;
@@ -1259,7 +1274,7 @@ a:hover {
         top: 48px;
     }
 
-    /* Fire panel touch */
+    /* Fire panel */
     .fire-period-select {
         padding: 8px 10px;
         font-size: 13px;
@@ -1329,9 +1344,7 @@ a:hover {
     color: #a78bfa;
 }
 
-.a11y-btn i {
-    font-size: 13px;
-}
+.a11y-btn i { font-size: 13px; }
 
 /* Kid info box */
 .kid-info-box {
@@ -1345,9 +1358,7 @@ a:hover {
     animation: fadeIn 0.3s ease;
 }
 
-.kid-info-box p {
-    margin-bottom: 8px;
-}
+.kid-info-box p { margin-bottom: 8px; }
 
 .kid-colors {
     display: flex;
@@ -1357,7 +1368,7 @@ a:hover {
     padding-left: 4px;
 }
 
-/* ===== Kid Mode Overrides ===== */
+/* ===== Kid Mode ===== */
 body.kid-mode .quake-mag {
     font-size: 24px;
     min-width: 60px;
@@ -1365,17 +1376,9 @@ body.kid-mode .quake-mag {
     border-radius: 14px;
 }
 
-body.kid-mode .quake-place {
-    font-size: 15px;
-}
-
-body.kid-mode .quake-meta {
-    font-size: 13px;
-}
-
-body.kid-mode .quake-item {
-    padding: 14px 16px;
-}
+body.kid-mode .quake-place { font-size: 15px; }
+body.kid-mode .quake-meta { font-size: 13px; }
+body.kid-mode .quake-item { padding: 14px 16px; }
 
 body.kid-mode .kid-emoji-desc {
     display: block;
@@ -1384,19 +1387,11 @@ body.kid-mode .kid-emoji-desc {
     line-height: 1.4;
 }
 
-body.kid-mode .stat-value {
-    font-size: 22px;
-}
+body.kid-mode .stat-value { font-size: 22px; }
+body.kid-mode .stat-label { font-size: 11px; }
+body.kid-mode .map-legend { font-size: 12px; }
 
-body.kid-mode .stat-label {
-    font-size: 11px;
-}
-
-body.kid-mode .map-legend {
-    font-size: 12px;
-}
-
-/* ===== High Contrast Mode ===== */
+/* ===== High Contrast ===== */
 body.high-contrast {
     --bg-primary: #000000;
     --bg-secondary: #0a0a0a;
@@ -1447,9 +1442,7 @@ body.high-contrast .info-box {
     cursor: pointer;
 }
 
-.fire-toggle input[type="checkbox"] {
-    display: none;
-}
+.fire-toggle input[type="checkbox"] { display: none; }
 
 .fire-toggle-slider {
     width: 36px;
@@ -1495,18 +1488,14 @@ body.high-contrast .info-box {
     outline: none;
 }
 
-.fire-period-select:focus {
-    border-color: #ff6b35;
-}
+.fire-period-select:focus { border-color: #ff6b35; }
 
 .fire-custom-date {
     display: flex;
     gap: 8px;
 }
 
-.fire-date-select {
-    flex: 1;
-}
+.fire-date-select { flex: 1; }
 
 .fire-emergency {
     padding: 8px 10px;
@@ -1560,7 +1549,6 @@ body.high-contrast .info-box {
     text-decoration: none;
 }
 
-/* Fire Section Titles */
 .fire-section-title {
     font-size: 12px;
     font-weight: 600;
@@ -1570,7 +1558,6 @@ body.high-contrast .info-box {
     border-bottom: 1px solid var(--border-color);
 }
 
-/* Fire Forecast Cards */
 .fire-forecast-cards {
     display: flex;
     flex-direction: column;
@@ -1642,9 +1629,7 @@ body.high-contrast .info-box {
     border-bottom: 1px solid rgba(42, 58, 78, 0.3);
 }
 
-.fire-history-table tr:hover td {
-    background: var(--bg-hover);
-}
+.fire-history-table tr:hover td { background: var(--bg-hover); }
 
 .fire-history-highlight td {
     background: rgba(230, 57, 70, 0.08) !important;
@@ -1693,9 +1678,7 @@ body.high-contrast .info-box {
     cursor: default;
 }
 
-.fire-history-bar:hover {
-    opacity: 0.8;
-}
+.fire-history-bar:hover { opacity: 0.8; }
 
 .fire-history-bar-label {
     font-size: 8px;
@@ -1769,7 +1752,7 @@ body.high-contrast .info-box {
     margin-top: 4px;
 }
 
-/* ===== TTS Active indicator ===== */
+/* ===== TTS Active ===== */
 .tts-active-pulse {
     animation: pulse-glow 1.5s ease-in-out infinite;
     color: #a78bfa !important;
