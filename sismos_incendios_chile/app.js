@@ -1207,6 +1207,8 @@ function switchMapTab(tab) {
         document.getElementById('fireLegend').style.display = 'block';
         fetchFires();
         fireMarkersLayer.addTo(map);
+        // Auto-hide the big legend on mobile when switching to fires
+        if (window.innerWidth <= 600) hideLegend();
     } else {
         map.removeLayer(fireMarkersLayer);
         fireLayerVisible = false;
@@ -1469,6 +1471,12 @@ function initSwipeToDismiss(panel, handleId, direction) {
             panel.style.opacity = '';
         }
     });
+}
+
+function hideLegend() {
+    const legend = document.getElementById('mapLegend');
+    if (legend) legend.classList.add('hidden-swipe');
+    document.getElementById('legendRestoreBtn').style.display = '';
 }
 
 function restoreLegend() {

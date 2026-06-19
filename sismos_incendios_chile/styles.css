@@ -722,7 +722,33 @@ a:hover {
     opacity: 0.8;
     cursor: grabbing;
 }
-/* ===== Legend content styles ===== */
+
+/* Close button inside legend */
+.legend-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: color var(--transition), background var(--transition);
+    padding: 0;
+}
+
+.legend-close-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+/* ===== Legend content styles ===== *//* ===== Legend content styles ===== */
 .map-legend h4 {
     font-size: 11px;
     font-weight: 600;
@@ -1230,6 +1256,15 @@ a:hover {
     .map-legend h4 {
         font-size: 10px;
         margin-bottom: 4px;
+    }
+
+    /* Bigger touch target for legend close btn on mobile */
+    .legend-close-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        top: 6px;
+        right: 6px;
     }
 
     .legend-item {
