@@ -117,6 +117,6 @@ Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para má
 ---
 
 <p align="center">
-  Desarrollado por <a href="https://github.com/afuenteshinojosa">Alejandra Fuentes Hinojosa</a><br>
+  Creado por <a href="https://github.com/afuenteshinojosa">Alejandra Fuentes Hinojosa</a><br> con ayuda de la IA
   Desde Chile hacia el mundo 🇨🇱
 </p>
