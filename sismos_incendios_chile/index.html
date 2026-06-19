@@ -463,6 +463,18 @@
                 <button class="map-btn" id="legendRestoreBtn" onclick="restoreLegend()" title="Mostrar simbología" aria-label="Mostrar simbología" style="display:none;">
                     <i class="fas fa-map-signs"></i>
                 </button>
+                <!-- Basemap switcher -->
+                <div class="basemap-control">
+                    <button class="map-btn" id="basemapBtn" onclick="toggleBasemapDropdown()" title="Cambiar mapa base" aria-label="Cambiar mapa base">
+                        <i class="fas fa-globe"></i>
+                    </button>
+                    <div class="basemap-dropdown" id="basemapDropdown" role="menu">
+                        <button class="basemap-option active" data-basemap="dark" onclick="switchBasemap('dark')">🌑 Oscuro</button>
+                        <button class="basemap-option" data-basemap="physical" onclick="switchBasemap('physical')">🏔️ Físico</button>
+                        <button class="basemap-option" data-basemap="topo" onclick="switchBasemap('topo')">🗺️ Topográfico</button>
+                        <button class="basemap-option" data-basemap="satellite" onclick="switchBasemap('satellite')">🛰️ Satélite</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Legend -->

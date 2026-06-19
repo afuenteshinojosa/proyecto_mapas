@@ -2,6 +2,8 @@
 let map, markersLayer, platesLayer, fireLayer, fireMarkersLayer, selectedQuake = null;
 let allQuakes = [];
 let allFires = [];
+let currentBaseTile = null;
+let currentBasemapKey = 'dark';
 
 let autoRefreshInterval = null;
 let platesVisible = true;
@@ -18,6 +20,30 @@ const CHILE_BOUNDS = {
 };
 
 const USGS_API = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
+
+// ===== Basemaps =====
+const BASEMAPS = {
+    dark: {
+        label: '🌑 Oscuro',
+        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        options: { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>', subdomains: 'abcd', maxZoom: 18 }
+    },
+    physical: {
+        label: '🏔️ Físico',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+        options: { attribution: 'Tiles &copy; Esri &mdash; Source: US National Park Service', maxZoom: 8 }
+    },
+    topo: {
+        label: '🗺️ Topográfico',
+        url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+        options: { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://opentopomap.org">OpenTopoMap</a>', subdomains: 'abc', maxZoom: 17 }
+    },
+    satellite: {
+        label: '🛰️ Satélite',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        options: { attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community', maxZoom: 18 }
+    }
+};
 
 // ===== Color Helpers =====
 function getMagColor(mag) {
@@ -103,11 +129,7 @@ function initMap() {
         minZoom: 3
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 18
-    }).addTo(map);
+    currentBaseTile = L.tileLayer(BASEMAPS.dark.url, BASEMAPS.dark.options).addTo(map);
 
     platesLayer = L.layerGroup().addTo(map);
     buildPlatesLayer();
@@ -417,6 +439,23 @@ function sanitizeURL(url) {
         }
     } catch (e) { /* ignore */ }
     return '#';
+}
+
+// ===== Basemap Switcher =====
+function switchBasemap(key) {
+    if (!BASEMAPS[key]) return;
+    if (currentBaseTile) map.removeLayer(currentBaseTile);
+    currentBaseTile = L.tileLayer(BASEMAPS[key].url, BASEMAPS[key].options).addTo(map);
+    currentBaseTile.bringToBack();
+    currentBasemapKey = key;
+    document.querySelectorAll('.basemap-option').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.basemap === key);
+    });
+    document.getElementById('basemapDropdown').classList.remove('open');
+}
+
+function toggleBasemapDropdown() {
+    document.getElementById('basemapDropdown').classList.toggle('open');
 }
 
 function closeInfoBox() {
@@ -1472,6 +1511,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('langBtn');
         if (dropdown && btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.classList.remove('open');
+        }
+        const basemapDropdown = document.getElementById('basemapDropdown');
+        const basemapBtn = document.getElementById('basemapBtn');
+        if (basemapDropdown && basemapBtn && !basemapBtn.contains(e.target) && !basemapDropdown.contains(e.target)) {
+            basemapDropdown.classList.remove('open');
         }
     });
 

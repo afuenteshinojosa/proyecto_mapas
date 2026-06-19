@@ -627,6 +627,57 @@ a:hover {
     border-color: var(--accent);
 }
 
+/* ===== Basemap Switcher ===== */
+.basemap-control {
+    position: relative;
+}
+
+.basemap-dropdown {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: calc(100% + 8px);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    padding: 4px;
+    z-index: 900;
+    min-width: 152px;
+    animation: fadeIn 0.15s ease;
+}
+
+.basemap-dropdown.open {
+    display: block;
+}
+
+.basemap-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background var(--transition);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.basemap-option:hover {
+    background: var(--bg-hover);
+}
+
+.basemap-option.active {
+    color: var(--accent);
+    background: var(--accent-glow);
+}
+
 /* Legend */
 .map-legend {
     position: absolute;
@@ -1228,27 +1279,28 @@ a:hover {
         margin: 10px auto 0;
     }
 
-    /* Botón cerrar — fijo dentro del sheet, arriba a la derecha */
+    /* Botón cerrar — esquina superior derecha del sheet */
     .close-btn {
-        position: fixed;
-        top: auto;
-        /* Calculamos desde abajo: 75vh - altura aproximada del botón */
-        bottom: calc(75vh - 44px);
-        right: 12px;
+        position: absolute;
+        top: 14px;
+        right: 14px;
         z-index: 1300;
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: 20px;
-        padding: 6px 12px;
-        font-size: 13px;
+        padding: 7px 13px;
+        font-size: 14px;
         color: var(--text-secondary);
         display: flex;
         align-items: center;
         gap: 5px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        min-width: 44px;
+        min-height: 44px;
+        justify-content: center;
     }
 
-    /* Añadir texto "Cerrar" al botón en móvil */
+    /* Texto "Cerrar" junto al ícono en móvil */
     .close-btn::after {
         content: 'Cerrar';
         font-family: 'Inter', sans-serif;
@@ -1256,9 +1308,9 @@ a:hover {
         font-weight: 500;
     }
 
-    /* Padding interior del contenido del infoBox */
+    /* Padding interior: deja espacio arriba para el botón cerrar */
     #infoContent {
-        padding: 12px 14px 20px;
+        padding: 58px 14px 20px;
     }
 
     /* Info header más compacto */
