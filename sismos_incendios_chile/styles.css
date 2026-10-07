@@ -522,6 +522,31 @@ a:hover {
     background: var(--bg-primary);
 }
 
+.leaflet-div-icon.city-label {
+    background: transparent;
+    border: 0;
+}
+
+.city-label-text {
+    display: inline-block;
+    transform: translateY(var(--label-y, 0));
+    padding: 3px 7px;
+    border: 1px solid rgba(148, 163, 184, 0.42);
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.9);
+    color: #f8fafc;
+    font: 600 11px/1.2 'Inter', sans-serif;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+}
+
+.city-label-text::first-letter {
+    color: #38bdf8;
+}
+
 .leaflet-control-zoom a {
     background: var(--bg-card) !important;
     color: var(--text-primary) !important;

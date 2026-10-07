@@ -144,34 +144,26 @@ function initMap() {
     markersLayer = L.layerGroup().addTo(map);
 
     const cities = [
-        { name: 'Santiago', lat: -33.4489, lng: -70.6693 },
-        { name: 'Valparaíso', lat: -33.0472, lng: -71.6127 },
-        { name: 'Concepción', lat: -36.8270, lng: -73.0503 },
+        { name: 'Santiago', lat: -33.4489, lng: -70.6693, labelOffset: -12 },
+        { name: 'Valparaíso', lat: -33.0472, lng: -71.6127, labelOffset: 12, labelSide: 'left' },
+        { name: 'Concepción', lat: -36.8270, lng: -73.0503, labelOffset: -10 },
         { name: 'Antofagasta', lat: -23.6509, lng: -70.3954 },
-        { name: 'Temuco', lat: -38.7359, lng: -72.5904 },
+        { name: 'Temuco', lat: -38.7359, lng: -72.5904, labelOffset: 10, labelSide: 'left' },
         { name: 'Arica', lat: -18.4746, lng: -70.3216 },
         { name: 'Iquique', lat: -20.2140, lng: -70.1522 },
         { name: 'La Serena', lat: -29.9027, lng: -71.2519 },
         { name: 'Punta Arenas', lat: -53.1638, lng: -70.9171 },
         { name: 'Copiapó', lat: -27.3668, lng: -70.3323 },
-        { name: 'Valdivia', lat: -39.8142, lng: -73.2459 },
-        { name: 'Puerto Montt', lat: -41.4693, lng: -72.9424 },
+        { name: 'Valdivia', lat: -39.8142, lng: -73.2459, labelOffset: -10 },
+        { name: 'Puerto Montt', lat: -41.4693, lng: -72.9424, labelOffset: 10, labelSide: 'left' },
     ];
 
     cities.forEach(city => {
         const icon = L.divIcon({
             className: 'city-label',
-            html: `<div style="
-                font-size: 10px;
-                color: rgba(136,153,170,0.7);
-                text-shadow: 0 0 4px rgba(0,0,0,0.8);
-                white-space: nowrap;
-                pointer-events: none;
-                font-family: 'Inter', sans-serif;
-                font-weight: 500;
-            ">● ${city.name}</div>`,
-            iconSize: [0, 0],
-            iconAnchor: [-6, 6]
+            html: `<span class="city-label-text" style="--label-y: ${city.labelOffset || 0}px">● ${city.name}</span>`,
+            iconSize: [140, 24],
+            iconAnchor: city.labelSide === 'left' ? [108, 12] : [-8, 12]
         });
         L.marker([city.lat, city.lng], { icon, interactive: false }).addTo(map);
     });
