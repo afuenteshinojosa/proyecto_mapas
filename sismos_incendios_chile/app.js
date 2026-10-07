@@ -22,16 +22,20 @@ const CHILE_BOUNDS = {
 const USGS_API = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
 
 // ===== Basemaps =====
+const satelliteDate = new Date();
+satelliteDate.setUTCDate(satelliteDate.getUTCDate() - 2);
+const satelliteDateString = satelliteDate.toISOString().slice(0, 10);
+
 const BASEMAPS = {
     dark: {
-        label: '🌑 Oscuro',
-        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-        options: { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>', subdomains: 'abcd', maxZoom: 18 }
+        label: '🗺️ Calles (Esri)',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+        options: { attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> — Sources: Esri, HERE, Garmin, OpenStreetMap contributors', maxZoom: 19 }
     },
     physical: {
-        label: '🏔️ Físico',
-        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
-        options: { attribution: 'Tiles &copy; Esri &mdash; Source: US National Park Service', maxZoom: 8 }
+        label: '🏔️ Topográfico (Esri)',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+        options: { attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> — Sources: Esri, USGS, NOAA', maxZoom: 19 }
     },
     topo: {
         label: '🗺️ Topográfico',
@@ -40,8 +44,8 @@ const BASEMAPS = {
     },
     satellite: {
         label: '🛰️ Satélite',
-        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        options: { attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community', maxZoom: 18 }
+        url: `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${satelliteDateString}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
+        options: { attribution: 'Imagery &copy; NASA Earthdata GIBS / VIIRS', maxZoom: 18, maxNativeZoom: 9 }
     }
 };
 

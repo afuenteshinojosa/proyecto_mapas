@@ -27,7 +27,7 @@ Dashboard interactivo que visualiza **sismos** e **incendios forestales** en Chi
 
 | Función | Descripción |
 |---------|------------|
-| 🗺️ **Mapa interactivo** | Visualización con Leaflet sobre CartoDB Dark Matter |
+| 🗺️ **Mapa interactivo** | Visualización con Leaflet sobre mapas base públicos de Esri |
 | 📡 **Datos en tiempo real** | Sismos vía USGS API, incendios vía NASA FIRMS |
 | 🔍 **Filtros avanzados** | Por período, magnitud mínima y profundidad |
 | 🌐 **Multiidioma** | Español, English, Português y Mapudungün |
@@ -69,7 +69,7 @@ npx serve .
 - **[Leaflet.js](https://leafletjs.com/)** — Mapas interactivos
 - **[USGS Earthquake API](https://earthquake.usgs.gov/)** — Datos sísmicos en tiempo real
 - **[NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/)** — Detección de incendios por satélite
-- **[CartoDB](https://carto.com/)** — Tiles de mapa estilo oscuro
+- **[Esri World Street Map](https://www.arcgis.com/home/item.html?id=3865c2d12e4d4b0e9f50b5df7b796e1a)** — Mapa base de calles, sin clave API
 - **[Font Awesome](https://fontawesome.com/)** — Iconografía
 - **HTML5 / CSS3 / JavaScript** — Sin frameworks, 100% vanilla
 

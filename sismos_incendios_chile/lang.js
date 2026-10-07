@@ -817,10 +817,10 @@ const TRANSLATIONS = {
         en: 'Official wildfire information for Chile. Emergencies: 130.'
     },
     'sources.osm': {
-        es: 'Mapa base: OpenStreetMap + CARTO',
-        arn: 'Mapa: OpenStreetMap + CARTO',
-        pt: 'Mapa base: OpenStreetMap + CARTO',
-        en: 'Base map: OpenStreetMap + CARTO'
+        es: 'Mapa base: Esri World Street Map',
+        arn: 'Mapa: Esri World Street Map',
+        pt: 'Mapa base: Esri World Street Map',
+        en: 'Base map: Esri World Street Map'
     }
 };
 
